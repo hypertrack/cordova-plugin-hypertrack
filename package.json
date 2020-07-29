@@ -1,0 +1,30 @@
+{
+  "version": "0.0.1",
+  "name": "cordova-plugin-hypertrack",
+  "cordova_name": "Cordova HyperTrack Plugin",
+  "description": "Cordova Plugin for native HyperTrack SDKs",
+  "license": "MIT",
+  "repo": "",
+  "issue": "",
+  "author": {
+    "name": "Denys Soroka",
+    "email": "denys@hypertrack.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hypertrack/cordova-plugin-hypertrack.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "location",
+    "tracking",
+    "android",
+    "cordova"
+  ],
+  "platforms": [
+    "android"
+  ],
+  "engines": [],
+  "englishdoc": ""
+}

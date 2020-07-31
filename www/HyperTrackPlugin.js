@@ -77,7 +77,11 @@ HyperTrackPlugin.prototype.syncDeviceSettings = function(success, error) {
 	exec(success, error, "HyperTrackPlugin", 'syncDeviceSettings', []);
 }
 
-/** If tracking service is running */
+/** 
+ * If tracking service is running 
+ * 
+ * @returns 0 if tracking service isn't running and 1 otherwise
+ */
 HyperTrackPlugin.prototype.isRunning = function(success, error) {
 	console.log("isRunning");
 	exec(success, error, "HyperTrackPlugin", 'isRunning', []);
@@ -96,11 +100,14 @@ HyperTrackPlugin.onHasSubscribersChange = function () {
 /**
  * Callback for the HyperTrack sdk state changes
  *
- * @param {Object} state            keys: event, error
+ * @param {String} state            one of "start", "stop" or tracking errors.
  */
 HyperTrackPlugin.prototype._status = function (state) {
 
-    if (info) {
+	// Poison pill guard for android2cordova callback
+	if (state === "") return
+
+    if (state) {
         if (hyperTrackPlugin._lastEvent !== state.event || hyperTrackPlugin._lastError !== state.error) {
 
             cordova.fireWindowEvent('onHyperTrackStatusChanged', state);

@@ -40,7 +40,12 @@ HyperTrackPlugin.prototype.setDeviceMetadata = function(deviceMetadata, success,
 	exec(success, error, "HyperTrackPlugin", 'setDeviceMetadata', [metadataString]);
 }
 
-/** Add geotag */
+/** 
+ * Add geotag 
+ * 
+ * @param {Object} geotagData
+ * @param {Object} expectedLocation    keys: latitude, longitude
+ */
 HyperTrackPlugin.prototype.addGeoTag = function(geotagData, expectedLocation, success, error) {
 	const geodataString = JSON.stringify(geotagData);
 	const locationString = JSON.stringify(expectedLocation);

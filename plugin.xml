@@ -7,6 +7,7 @@
   <description>Cordova HyperTrack Plugin</description>
   <license>MIT</license>
   <keywords>cordova, hypertrack, location, tracking</keywords>
+
   <js-module src="www/HyperTrackPlugin.js" name="HyperTrackPlugin">
     <clobbers target="hypertrack" />
   </js-module>
@@ -18,8 +19,7 @@
   <!-- ANDROID CONFIGURATION -->
   <platform name="android">
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
-      <android:name="com.hypertrack.sdk.service.HyperTrackSDKService"
-    tools:remove="android:foregroundServiceType"/>
+      <android:name="com.hypertrack.sdk.service.HyperTrackSDKService" tools:remove="android:foregroundServiceType"/>
     </config-file>
 
     <framework src="src/android/HyperTrackPlugin.gradle" custom="true" type="gradleReference"/>

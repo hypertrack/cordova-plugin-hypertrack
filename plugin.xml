@@ -18,6 +18,10 @@
 
   <!-- ANDROID CONFIGURATION -->
   <platform name="android">
+
+    <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
+        <manifest xmlns:tools="http://schemas.android.com/tools" />
+    </edit-config>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <service android:name="com.hypertrack.sdk.service.HyperTrackSDKService" tools:remove="android:foregroundServiceType"/>
     </config-file>

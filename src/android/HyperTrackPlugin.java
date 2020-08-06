@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.hypertrack.sdk.HyperTrack;
+import com.hypertrack.sdk.ServiceNotificationConfig;
 import com.hypertrack.sdk.TrackingError;
 import com.hypertrack.sdk.TrackingStateObserver;
 import com.hypertrack.sdk.utils.StaticUtilsAdapter;
@@ -58,8 +59,19 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 					throwIfNotInitialized();
 					String deviceMetaJson = args.getString(0);
 					Map<String, Object> meta = StaticUtilsAdapter.getGson().fromJson(deviceMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
-					Location expectedLocation = getExpectedLocation(args);
-					sdkInstance.addGeotag(meta, expectedLocation);
+					sdkInstance.setDeviceMetadata(meta);
+					callbackContext.success();
+					return true;
+				case "setTrackingNotificationProperties":
+					throwIfNotInitialized();
+					String title = args.getString(0);
+					String body = args.getString(1);
+					sdkInstance.setTrackingNotificationConfig(
+						new ServiceNotificationConfig.Builder()
+								.setContentTitle(title)
+								.setContentText(body)
+								.build()
+				    );
 					callbackContext.success();
 					return true;
 				case "addGeoTag":

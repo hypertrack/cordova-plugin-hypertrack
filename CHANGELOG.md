@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+### Fixed
+- Expected location in geotags not been passed from JS to Java bug.
+
 ## [0.0.2] - 2020-08-06
 ### Fixed
 - Missing notification properties setter implementation was added at Java layer.

@@ -78,7 +78,8 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 					throwIfNotInitialized();
 					String tagMetaJson = args.getString(0);
 					Map<String, Object> payload = StaticUtilsAdapter.getGson().fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
-					sdkInstance.addGeotag(payload);
+					Location expectedLocation = getExpectedLocation(args);
+					sdkInstance.addGeotag(payload, expectedLocation);
 					callbackContext.success();
 					return true;
 				case "requestPermissionsIfNecessary":

@@ -59,8 +59,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 					throwIfNotInitialized();
 					String deviceMetaJson = args.getString(0);
 					Map<String, Object> meta = StaticUtilsAdapter.getGson().fromJson(deviceMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
-					Location expectedLocation = getExpectedLocation(args);
-					sdkInstance.addGeotag(meta, expectedLocation);
+					sdkInstance.setDeviceMetadata(meta);
 					callbackContext.success();
 					return true;
 				case "setTrackingNotificationProperties":

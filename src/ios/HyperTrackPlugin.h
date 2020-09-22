@@ -1,12 +1,15 @@
-//
-//  HyperTrackPlugin.h
-//  
-//
-//  Created by Dmytro Shapovalov on 21.09.2020.
-//
+#import <Cordova/CDV.h>
 
-#ifndef HyperTrackPlugin_h
-#define HyperTrackPlugin_h
+@interface HyperTrackPlugin : CDVPlugin
 
+  - (void)initialize:(CDVInvokedUrlCommand *)command;
+  - (void)isRunning:(CDVInvokedUrlCommand *)command;
+  - (void)syncDeviceSettings:(CDVInvokedUrlCommand *)command;
+  - (void)setTrackingNotificationProperties:(CDVInvokedUrlCommand *)command;
+  - (void)allowMockLocations:(CDVInvokedUrlCommand *)command;
+  - (void)requestPermissionsIfNecessary:(CDVInvokedUrlCommand *)command;
+  - (void)addGeoTag:(CDVInvokedUrlCommand *)command;
+  - (void)setDeviceMetadata:(CDVInvokedUrlCommand *)command;
+  - (void)setDeviceName:(CDVInvokedUrlCommand *)command;
 
-#endif /* HyperTrackPlugin_h */
+@end

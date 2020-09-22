@@ -17,13 +17,16 @@
   "keywords": [
     "ecosystem:cordova",
     "cordova-android",
+    "cordova-ios",
     "location",
     "tracking",
     "android",
+    "ios",
     "cordova"
   ],
   "platforms": [
-    "android"
+    "android",
+    "ios"
   ],
   "engines": [],
   "englishdoc": ""

@@ -64,7 +64,7 @@
         <source url="https://github.com/CocoaPods/Specs.git" />
       </config>
       <pods use-frameworks="true">
-        <pod name="HyperTrack/Objective-C" />
+        <pod name="HyperTrack/Objective-C", '4.5.0' />
       </pods>
     </podspec>
 

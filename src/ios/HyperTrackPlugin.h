@@ -12,8 +12,6 @@
   - (void)addGeoTag:(CDVInvokedUrlCommand *)command;
   - (void)setDeviceMetadata:(CDVInvokedUrlCommand *)command;
   - (void)setDeviceName:(CDVInvokedUrlCommand *)command;
-  - (void)subscribe:(CDVInvokedUrlCommand *)command;
-  - (void)unsubscribe:(CDVInvokedUrlCommand *)command;
   - (void)enableDebugLogging:(CDVInvokedUrlCommand *)command;
 
 @end

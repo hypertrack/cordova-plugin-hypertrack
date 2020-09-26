@@ -2,7 +2,31 @@
 
 
 #import "HyperTrackPlugin.h"
+#import <WebKit/WebKit.h>
 @import HyperTrack;
+
+@interface Info: NSObject
+
+@property(strong, nonatomic) NSString *eventType;
+@property(strong, nonatomic) NSString *data;
+
+- (instancetype)initWithEventType:(NSString*)type data:(NSString*)data;
+
+@end
+
+@implementation Info
+
+- (instancetype)initWithEventType:(NSString*)type data:(NSString*)data;
+{
+  self = [super init];
+  if (self) {
+    self.eventType = type;
+    self.data = data;
+  }
+  return self;
+}
+
+@end
 
 @interface HyperTrackPlugin ()
 
@@ -12,6 +36,14 @@
 @end
 
 @implementation HyperTrackPlugin
+
+- (void)pluginInitialize {
+  [self startEventDispatching];
+}
+
+- (void)dealloc {
+  [self stopEventDispatching];
+}
 
 - (void)initialize:(CDVInvokedUrlCommand *)command {
 
@@ -199,7 +231,7 @@
 
 #pragma mark NSNotification
 
-- (void)subscribe:(CDVInvokedUrlCommand *)command {
+- (void)startEventDispatching {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(sendTrackingStateToRNWith:)
@@ -217,41 +249,71 @@
                                            selector:@selector(sendCriticalErrorToRNWith:)
                                                name:HTSDK.didEncounterUnrestorableErrorNotification
                                              object:nil];
-  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
-  [pluginResult setKeepCallbackAsBool:YES];
-  self.statusUpdateCallback = command;
-  [self.commandDelegate sendPluginResult: pluginResult callbackId:command.callbackId];
 }
 
-- (void)unsubscribe:(CDVInvokedUrlCommand *)command {
+- (void)stopEventDispatching {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  self.statusUpdateCallback = NULL;
-  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
-  [pluginResult setKeepCallbackAsBool:NO];
-  [self.commandDelegate sendPluginResult: pluginResult callbackId:command.callbackId];
 }
 
-- (void)updateStatus:(NSString *)update {
-  if (self.statusUpdateCallback != NULL) {
-    [self.commandDelegate sendPluginResult: [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:update]
-                                callbackId:self.statusUpdateCallback.callbackId];
-  }
+- (void)updateStatus:(Info *)info {
+  [self sendEventWithJSON:@{@"eventType": [info eventType], @"data": [info data]}];
 }
 
 - (void)sendTrackingStateToRNWith:(NSNotification*)notification {
-  NSString *eventName = @"";
+  NSString *data = @"";
   if ([notification.name isEqualToString: @"HyperTrackStartedTracking"]) {
-    eventName = @"start";
+    data = @"start";
   } else if ([notification.name isEqualToString: @"HyperTrackStoppedTracking"]) {
-    eventName = @"stop";
+    data = @"stop";
   } else {
     return;
   }
-  [self updateStatus: eventName];
+  [self updateStatus: [[Info alloc] initWithEventType:@"onHyperTrackStatusChanged" data:data]];
 }
 
 - (void)sendCriticalErrorToRNWith:(NSNotification*)notification {
-  [self updateStatus: [notification hyperTrackTrackingError].description];
+  [self updateStatus: [[Info alloc] initWithEventType:@"onHyperTrackError" data:[notification hyperTrackTrackingError].description]];
+}
+
+- (BOOL)sendEventWithJSON:(id)JSON {
+    if ([JSON isKindOfClass:[NSDictionary class]]) {
+        JSON = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:JSON options:0 error:NULL] encoding:NSUTF8StringEncoding];
+    }
+    NSString *script = [NSString stringWithFormat:@"HyperTrackPlugin.dispatchEvent(%@)", JSON];
+    NSString *result = [self stringByEvaluatingJavaScriptFromString:script];
+    return [result length]? [result boolValue]: YES;
+}
+
+void runOnMainQueueWithoutDeadlocking(void (^block)(void)) {
+    if ([NSThread isMainThread]) {
+        block();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
+}
+
+- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script {
+    __block NSString *result;
+#if WK_WEB_VIEW_ONLY
+    if ([self.webView isKindOfClass:WKWebView.class]) {
+        runOnMainQueueWithoutDeadlocking(^{
+            [((WKWebView *)self.webView) evaluateJavaScript:script completionHandler:^(id resultID, NSError *error) {
+                result = [resultID description];
+            }];
+        });
+    }
+#else
+    if ([self.webView isKindOfClass:UIWebView.class]) {
+        result = [(UIWebView *)self.webView stringByEvaluatingJavaScriptFromString:script];
+    } else if ([self.webView isKindOfClass:WKWebView.class]) {
+        runOnMainQueueWithoutDeadlocking(^{
+            [((WKWebView *)self.webView) evaluateJavaScript:script completionHandler:^(id resultID, NSError *error) {
+                result = [resultID description];
+            }];
+        });
+    }
+#endif
+    return result;
 }
 
 @end

@@ -8,10 +8,6 @@
   <license>MIT</license>
   <keywords>cordova, hypertrack, location, tracking</keywords>
 
-  <js-module src="www/HyperTrackPlugin.js" name="hypertrack">
-    <clobbers target="hypertrack" />
-  </js-module>
-
   <engines>
     <engine name="cordova-android" version=">=8.1.0" />
     <engine name="cordova-ios" version=">=6.1.1" />
@@ -19,7 +15,9 @@
 
   <!-- ANDROID CONFIGURATION -->
   <platform name="android">
-
+    <js-module src="www/HyperTrackPlugin.js" name="HyperTrack">
+      <clobbers target="HyperTrack" />
+    </js-module>
     <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
         <manifest xmlns:tools="http://schemas.android.com/tools" />
     </edit-config>
@@ -46,12 +44,14 @@
         <param name="ios-package" value="HyperTrackPlugin" />
       </feature>
     </config-file>
-
+    <js-module src="www/HyperTrackPlugin.js" name="HyperTrack">
+        <clobbers target="HyperTrack" />
+    </js-module>
     <header-file src="src/ios/AppDelegate+HyperTrackPlugin.h" />
 		<source-file src="src/ios/AppDelegate+HyperTrackPlugin.m" />
     <source-file src="src/ios/HyperTrackPlugin.m" />
     <header-file src="src/ios/HyperTrackPlugin.h" />
-    
+
     <config-file parent="aps-environment" target="*/Entitlements-Debug.plist">
       <string>development</string>
     </config-file>
@@ -61,7 +61,7 @@
 
     <podspec>
       <config>
-        <source url="https://github.com/CocoaPods/Specs.git" />
+        <source url="https://cdn.cocoapods.org/" />
       </config>
       <pods use-frameworks="true">
         <pod name="HyperTrack/Objective-C" />

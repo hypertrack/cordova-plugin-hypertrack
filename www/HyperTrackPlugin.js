@@ -126,32 +126,6 @@ sdkHandle.isRunning = function(success, error) {
 var listeners = {};
 
 /**
- * Unsubscribes listener for given event type.
- *
- * __Supported Platforms__
- *
- * -iOS
- * -Android
- */
-exports.removeEventListener = function(type, listener) {
-  if (platform === "ios") {
-    var existing = listeners[type];
-    if (existing) {
-      var index;
-      while ((index = existing.indexOf(listener)) != -1) {
-        existing.splice(index, 1);
-      }
-    }
-  } else if (platform === "android") {
-    if (type in channels) {
-      channels[type].unsubscribe(listener);
-    }
-  } else {
-    console.log("Not implemented on " + platform + ".");
-  }
-};
-
-/**
  * Event channels.
  *
  * __Supported Platforms__
@@ -200,12 +174,12 @@ function onEventSubscribersChanged() {
         console.log("Error while receiving event.");
       },
       "HyperTrackPlugin",
-      "startEventDispatching",
+      "subscribe",
       []
     );
   } else if (numberOfHandlers() === 0) {
     console.log("disconnecting event channel");
-    exec(null, null, "HyperTrackPlugin", "stopEventDispatching", []);
+    exec(null, null, "HyperTrackPlugin", "unsubscribe", []);
   }
 }
 
@@ -254,6 +228,32 @@ var hypertrack = {
 		  } else if (platform === "android") {
 		    if (type in channels) {
 		      channels[type].subscribe(listener);
+		    }
+		  } else {
+		    console.log("Not implemented on " + platform + ".");
+		  }
+		},
+
+		/**
+		 * Unsubscribes listener for given event type.
+		 *
+		 * __Supported Platforms__
+		 *
+		 * -iOS
+		 * -Android
+		 */
+		removeEventListener: function(type, listener) {
+		  if (platform === "ios") {
+		    var existing = listeners[type];
+		    if (existing) {
+		      var index;
+		      while ((index = existing.indexOf(listener)) != -1) {
+		        existing.splice(index, 1);
+		      }
+		    }
+		  } else if (platform === "android") {
+		    if (type in channels) {
+		      channels[type].unsubscribe(listener);
 		    }
 		  } else {
 		    console.log("Not implemented on " + platform + ".");

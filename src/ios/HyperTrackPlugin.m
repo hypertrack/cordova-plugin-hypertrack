@@ -5,29 +5,6 @@
 #import <WebKit/WebKit.h>
 @import HyperTrack;
 
-@interface Info: NSObject
-
-@property(strong, nonatomic) NSString *eventType;
-@property(strong, nonatomic) NSString *data;
-
-- (instancetype)initWithEventType:(NSString*)type data:(NSString*)data;
-
-@end
-
-@implementation Info
-
-- (instancetype)initWithEventType:(NSString*)type data:(NSString*)data;
-{
-  self = [super init];
-  if (self) {
-    self.eventType = type;
-    self.data = data;
-  }
-  return self;
-}
-
-@end
-
 @interface HyperTrackPlugin ()
 
 @property(strong, nonatomic, nullable) HTResult *htResult;
@@ -41,7 +18,7 @@
   [self startEventDispatching];
 }
 
-- (void)dealloc {
+- (void)onAppTerminate {
   [self stopEventDispatching];
 }
 
@@ -255,8 +232,8 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)updateStatus:(Info *)info {
-  [self sendEventWithJSON:@{@"eventType": [info eventType], @"data": [info data]}];
+- (void)updateStatus:(id)info {
+  [self sendEventWithJSON:info];
 }
 
 - (void)sendTrackingStateToRNWith:(NSNotification*)notification {
@@ -268,18 +245,18 @@
   } else {
     return;
   }
-  [self updateStatus: [[Info alloc] initWithEventType:@"onHyperTrackStatusChanged" data:data]];
+  [self updateStatus: @{@"type": @"onHyperTrackStatusChanged", @"data": data}];
 }
 
 - (void)sendCriticalErrorToRNWith:(NSNotification*)notification {
-  [self updateStatus: [[Info alloc] initWithEventType:@"onHyperTrackError" data:[notification hyperTrackTrackingError].description]];
+  [self updateStatus: @{@"type": @"onHyperTrackError", @"data": [notification hyperTrackTrackingError].description}];
 }
 
 - (BOOL)sendEventWithJSON:(id)JSON {
     if ([JSON isKindOfClass:[NSDictionary class]]) {
         JSON = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:JSON options:0 error:NULL] encoding:NSUTF8StringEncoding];
     }
-    NSString *script = [NSString stringWithFormat:@"HyperTrackPlugin.dispatchEvent(%@)", JSON];
+    NSString *script = [NSString stringWithFormat:@"HyperTrack.dispatchEvent(%@)", JSON];
     NSString *result = [self stringByEvaluatingJavaScriptFromString:script];
     return [result length]? [result boolValue]: YES;
 }

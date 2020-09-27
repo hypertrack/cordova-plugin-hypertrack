@@ -125,6 +125,25 @@ sdkHandle.isRunning = function(success, error) {
  */
 var listeners = {};
 
+dispatchEvent = function(event) {
+	if (platform === "ios") {
+		var result = undefined;
+		var functions = listeners[event.type];
+		if (functions) {
+			for (var i = 0; i < functions.length; i++) {
+				result = functions[i](event);
+				if (typeof result != "undefined") {
+					if (!result) return result;
+				}
+			}
+		}
+		return result;
+	} else {
+		console.log("Not implemented on " + platform + ".");
+		return undefined;
+	}
+};
+
 /**
  * Event channels.
  *
@@ -174,12 +193,12 @@ function onEventSubscribersChanged() {
         console.log("Error while receiving event.");
       },
       "HyperTrackPlugin",
-      "subscribe",
+      "startEventDispatching",
       []
     );
   } else if (numberOfHandlers() === 0) {
     console.log("disconnecting event channel");
-    exec(null, null, "HyperTrackPlugin", "unsubscribe", []);
+    exec(null, null, "HyperTrackPlugin", "stopEventDispatching", []);
   }
 }
 
@@ -189,25 +208,6 @@ for (var key in channels) {
 }
 
 var hypertrack = {
-
-		dispatchEvent: function(event) {
-		  if (platform === "ios") {
-		    var result = undefined;
-		    var functions = listeners[event.type];
-		    if (functions) {
-		      for (var i = 0; i < functions.length; i++) {
-		        result = functions[i](event);
-		        if (typeof result != "undefined") {
-		          if (!result) return result;
-		        }
-		      }
-		    }
-		    return result;
-		  } else {
-		    console.log("Not implemented on " + platform + ".");
-		    return undefined;
-		  }
-		},
 
 		/**
 		 * Subscribes listener for given event type.

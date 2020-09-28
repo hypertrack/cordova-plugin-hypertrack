@@ -15,8 +15,8 @@
 
   <!-- ANDROID CONFIGURATION -->
   <platform name="android">
-    <js-module src="www/HyperTrackPlugin.js" name="HyperTrack">
-      <clobbers target="HyperTrack" />
+    <js-module src="www/HyperTrackPlugin.js" name="hypertrack">
+      <clobbers target="hypertrack" />
     </js-module>
     <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
         <manifest xmlns:tools="http://schemas.android.com/tools" />
@@ -44,8 +44,8 @@
         <param name="ios-package" value="HyperTrackPlugin" />
       </feature>
     </config-file>
-    <js-module src="www/HyperTrackPlugin.js" name="HyperTrack">
-        <clobbers target="HyperTrack" />
+    <js-module src="www/HyperTrackPlugin.js" name="hypertrack">
+        <clobbers target="hypertrack" />
     </js-module>
     <header-file src="src/ios/AppDelegate+HyperTrackPlugin.h" />
 		<source-file src="src/ios/AppDelegate+HyperTrackPlugin.m" />

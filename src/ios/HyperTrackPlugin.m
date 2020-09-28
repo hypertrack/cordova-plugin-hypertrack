@@ -256,7 +256,7 @@
     if ([JSON isKindOfClass:[NSDictionary class]]) {
         JSON = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:JSON options:0 error:NULL] encoding:NSUTF8StringEncoding];
     }
-    NSString *script = [NSString stringWithFormat:@"HyperTrack.dispatchEvent(%@)", JSON];
+    NSString *script = [NSString stringWithFormat:@"dispatchEvent(%@)", JSON];
     NSString *result = [self stringByEvaluatingJavaScriptFromString:script];
     return [result length]? [result boolValue]: YES;
 }

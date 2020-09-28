@@ -192,12 +192,12 @@ function onEventSubscribersChanged() {
         console.log("Error while receiving event.");
       },
       "HyperTrackPlugin",
-      "startEventDispatching",
+      "subscribe",
       []
     );
   } else if (numberOfHandlers() === 0) {
     console.log("disconnecting event channel");
-    exec(null, null, "HyperTrackPlugin", "stopEventDispatching", []);
+    exec(null, null, "HyperTrackPlugin", "unsubscribe", []);
   }
 }
 

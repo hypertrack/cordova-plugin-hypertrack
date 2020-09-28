@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" 
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="cordova-plugin-hypertrack-v3" 
+    id="cordova-plugin-hypertrack-v3"
     version="0.0.2">
   <name>HyperTrackPlugin</name>
   <description>Cordova HyperTrack Plugin</description>
   <license>MIT</license>
   <keywords>cordova, hypertrack, location, tracking</keywords>
 
-  <js-module src="www/HyperTrackPlugin.js" name="hypertrack">
-    <clobbers target="hypertrack" />
-  </js-module>
-
   <engines>
     <engine name="cordova-android" version=">=8.1.0" />
+    <engine name="cordova-ios" version=">=6.1.1" />
   </engines>
 
   <!-- ANDROID CONFIGURATION -->
   <platform name="android">
-
+    <js-module src="www/HyperTrackPlugin.js" name="hypertrack">
+      <clobbers target="hypertrack" />
+    </js-module>
     <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
         <manifest xmlns:tools="http://schemas.android.com/tools" />
     </edit-config>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <service android:name="com.hypertrack.sdk.service.HyperTrackSDKService" tools:remove="android:foregroundServiceType"/>
     </config-file>
-    
+
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="HyperTrackPlugin">
           <param name="android-package" value="com.hypertrack.sdk.cordova.plugin.HyperTrackPlugin" />
@@ -34,6 +33,59 @@
 
     <framework src="src/android/HyperTrackPlugin.gradle" custom="true" type="gradleReference"/>
     <source-file src="src/android/HyperTrackPlugin.java" target-dir="src/com/hypertrack/sdk/cordova/plugin" />
+
+  </platform>
+
+  <!-- iOS CONFIGURATION -->
+  <platform name="ios">
+
+    <config-file parent="/*" target="config.xml">
+      <feature name="HyperTrackPlugin">
+        <param name="ios-package" value="HyperTrackPlugin" />
+      </feature>
+    </config-file>
+    <js-module src="www/HyperTrackPlugin.js" name="hypertrack">
+        <clobbers target="hypertrack" />
+    </js-module>
+    <header-file src="src/ios/AppDelegate+HyperTrackPlugin.h" />
+		<source-file src="src/ios/AppDelegate+HyperTrackPlugin.m" />
+    <source-file src="src/ios/HyperTrackPlugin.m" />
+    <header-file src="src/ios/HyperTrackPlugin.h" />
+
+    <config-file parent="aps-environment" target="*/Entitlements-Debug.plist">
+      <string>development</string>
+    </config-file>
+    <config-file parent="aps-environment" target="*/Entitlements-Release.plist">
+      <string>production</string>
+    </config-file>
+
+    <podspec>
+      <config>
+        <source url="https://cdn.cocoapods.org/" />
+      </config>
+      <pods use-frameworks="true">
+        <pod name="HyperTrack/Objective-C" />
+      </pods>
+    </podspec>
+
+    <edit-config target="NSLocationAlwaysAndWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
+      <string>need location access to find things nearby</string>
+    </edit-config>
+    <edit-config target="NSLocationAlwaysUsageDescription" file="*-Info.plist" mode="merge">
+      <string>need location access to find things nearby</string>
+    </edit-config>
+    <edit-config target="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
+      <string>need location access to find things nearby</string>
+    </edit-config>
+    <edit-config target="NSMotionUsageDescription" file="*-Info.plist" mode="merge">
+      <string>need motion access to find things nearby</string>
+    </edit-config>
+    <edit-config target="UIBackgroundModes" file="*-Info.plist" mode="merge">
+      <array>
+        <string>location</string>
+        <string>remote-notification</string>
+      </array>
+    </edit-config>
 
   </platform>
 

@@ -1,4 +1,3 @@
-cordova.define("cordova-plugin-hypertrack-v3.HyperTrack", function(require, exports, module) {
 var exec = require('cordova/exec');
 var platform = window.cordova.platformId;
 var channel = require("cordova/channel");
@@ -304,5 +303,3 @@ var hypertrack = {
 }
 
 module.exports = hypertrack;
-
-});

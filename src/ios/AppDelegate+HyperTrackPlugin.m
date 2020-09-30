@@ -4,7 +4,7 @@
 @import HyperTrack;
 
 
-@implementation AppDelegate (FirebasePlugin)
+@implementation AppDelegate (HyperTrackPlugin)
 
 + (void)load {
   [AppDelegate swizzle];

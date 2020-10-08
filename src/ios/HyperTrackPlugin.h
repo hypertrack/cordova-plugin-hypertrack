@@ -10,6 +10,8 @@
   - (void)allowMockLocations:(CDVInvokedUrlCommand *)command;
   - (void)requestPermissionsIfNecessary:(CDVInvokedUrlCommand *)command;
   - (void)addGeoTag:(CDVInvokedUrlCommand *)command;
+  - (void)start:(CDVInvokedUrlCommand *)command;
+  - (void)stop:(CDVInvokedUrlCommand *)command;
   - (void)setDeviceMetadata:(CDVInvokedUrlCommand *)command;
   - (void)setDeviceName:(CDVInvokedUrlCommand *)command;
   - (void)enableDebugLogging:(CDVInvokedUrlCommand *)command;

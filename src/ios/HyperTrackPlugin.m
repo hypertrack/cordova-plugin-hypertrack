@@ -111,6 +111,38 @@
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (void)start:(CDVInvokedUrlCommand *)command {
+
+  CDVPluginResult* pluginResult = nil;
+
+  if (self.htResult.hyperTrack != NULL) {
+    [self.htResult.hyperTrack start];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+  } else if (self.htResult.error != NULL) {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: self.htResult.error.description];
+  } else {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+  }
+
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)stop:(CDVInvokedUrlCommand *)command {
+
+  CDVPluginResult* pluginResult = nil;
+
+  if (self.htResult.hyperTrack != NULL) {
+    [self.htResult.hyperTrack stop];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+  } else if (self.htResult.error != NULL) {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: self.htResult.error.description];
+  } else {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+  }
+
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void)requestPermissionsIfNecessary:(CDVInvokedUrlCommand *)command {
 
   CDVPluginResult* pluginResult = nil;

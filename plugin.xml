@@ -18,12 +18,6 @@
     <js-module src="www/HyperTrackPlugin.js" name="hypertrack">
       <clobbers target="hypertrack" />
     </js-module>
-    <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
-        <manifest xmlns:tools="http://schemas.android.com/tools" />
-    </edit-config>
-    <config-file target="AndroidManifest.xml" parent="/manifest/application">
-      <service android:name="com.hypertrack.sdk.service.HyperTrackSDKService" tools:remove="android:foregroundServiceType"/>
-    </config-file>
 
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="HyperTrackPlugin">

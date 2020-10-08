@@ -3,6 +3,10 @@
 ## Unreleased
 ### Fixed
 - Expected location in geotags not been passed from JS to Java bug.
+- Android SDK was updated to v4.5.4
+### Added
+- Start/Stop tracking from the SDK methods
+- iOS platform support
 
 ## [0.0.2] - 2020-08-06
 ### Fixed

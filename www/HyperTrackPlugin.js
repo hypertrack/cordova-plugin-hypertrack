@@ -109,6 +109,30 @@ sdkHandle.isRunning = function(success, error) {
 	exec(success, error, "HyperTrackPlugin", 'isRunning', []);
 }
 
+/**
+ * Start tracking service
+ *
+ *
+ * @param {function(number)} success - - success callback.
+ * @param {function(error)} errror - error callback.
+ */
+sdkHandle.start = function(success, error) {
+	console.log("HyperTrack:start");
+	exec(success, error, "HyperTrackPlugin", 'start', []);
+}
+
+/**
+ * Stop tracking service
+ *
+ *
+ * @param {function(number)} success - - success callback.
+ * @param {function(error)} errror - error callback.
+ */
+sdkHandle.stop = function(success, error) {
+	console.log("HyperTrack:stop");
+	exec(success, error, "HyperTrackPlugin", 'stop', []);
+}
+
 /* ------------ */
 /* Internal API */
 /* ------------ */

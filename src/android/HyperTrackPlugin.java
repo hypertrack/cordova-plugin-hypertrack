@@ -49,6 +49,16 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 					String deviceId = sdkInstance.getDeviceID();
 					callbackContext.success(deviceId);
 					return true;
+				case "start":
+					throwIfNotInitialized();
+					sdkInstance.start();
+					callbackContext.success();
+					return true;
+				case "stop":
+					throwIfNotInitialized();
+					sdkInstance.stop();
+					callbackContext.success();
+					return true;
 				case "setDeviceName":
 					throwIfNotInitialized();
 					String deviceName = args.getString(0);

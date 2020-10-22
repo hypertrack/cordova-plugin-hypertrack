@@ -1,6 +1,12 @@
 # Changelog
 
 ## Unreleased
+
+## [0.0.4] - 2020-1022
+### Fixed
+- Android push token updates and messages are forwarded to [FCM Plugin](https://github.com/andrehtissot/cordova-plugin-fcm-with-dependecy-updated) if it's present in project.
+
+## [0.0.3]
 ### Fixed
 - Expected location in geotags not been passed from JS to Java bug.
 - Android SDK was updated to v4.5.4

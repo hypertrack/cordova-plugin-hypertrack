@@ -3,14 +3,13 @@ package com.hypertrack.sdk.cordova.plugin;
 import android.location.Location;
 import android.util.Log;
 
-
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.hypertrack.sdk.HyperTrack;
 import com.hypertrack.sdk.ServiceNotificationConfig;
 import com.hypertrack.sdk.TrackingError;
 import com.hypertrack.sdk.TrackingStateObserver;
-import com.hypertrack.sdk.utils.StaticUtilsAdapter;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -25,6 +24,8 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 	
 	private HyperTrack sdkInstance;
 	private CallbackContext statusUpdateCallback;
+
+	private final Gson mGson = new Gson();
 	 
 	@Override	 
 	public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) {
@@ -68,7 +69,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				case "setDeviceMetadata":
 					throwIfNotInitialized();
 					String deviceMetaJson = args.getString(0);
-					Map<String, Object> meta = StaticUtilsAdapter.getGson().fromJson(deviceMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
+					Map<String, Object> meta = mGson.fromJson(deviceMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
 					sdkInstance.setDeviceMetadata(meta);
 					callbackContext.success();
 					return true;
@@ -87,7 +88,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				case "addGeoTag":
 					throwIfNotInitialized();
 					String tagMetaJson = args.getString(0);
-					Map<String, Object> payload = StaticUtilsAdapter.getGson().fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
+					Map<String, Object> payload = mGson.fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
 					Location expectedLocation = getExpectedLocation(args);
 					sdkInstance.addGeotag(payload, expectedLocation);
 					callbackContext.success();
@@ -154,7 +155,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 
 	private Location getExpectedLocation(JSONArray args) {
 		if (args.length() < 2) return null;
-		SerializedLocation payload = StaticUtilsAdapter.getGson()
+		SerializedLocation payload = mGson
 				.fromJson(args.optString(1), SerializedLocation.class);
 		return payload != null ? payload.asLocation() : null;
 	}

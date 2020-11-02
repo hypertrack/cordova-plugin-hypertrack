@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-## [0.0.4] - 2020-1022
+## [0.0.5] - 2020-11-02
+### Changed
+- Updated to use Android SDK v4.8.0
+
+## [0.0.4] - 2020-10-22
 ### Fixed
 - Android push token updates and messages are forwarded to [FCM Plugin](https://github.com/andrehtissot/cordova-plugin-fcm-with-dependecy-updated) if it's present in project.
 

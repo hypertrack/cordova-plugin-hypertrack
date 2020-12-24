@@ -13,7 +13,7 @@ Get your publishable key from the [hypertrack dashboard](https://dashboard.hyper
 
 ## Usage
 
-TBD @denys
+Check out our [Quickstart](https://github.com/hypertrack/quickstart-cordova/) for details.
 
 ## License
 

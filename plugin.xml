@@ -24,18 +24,9 @@
           <param name="android-package" value="com.hypertrack.sdk.cordova.plugin.HyperTrackPlugin" />
       </feature>
     </config-file>
-		<config-file target="AndroidManifest.xml" parent="/manifest/application">
-        <service android:name="com.hypertrack.sdk.cordova.plugin.HyperTrackCordovaPluginMessagingService"
-            android:exported="false">
-            <intent-filter android:priority="10" >
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-		</config-file>
 
     <framework src="src/android/HyperTrackPlugin.gradle" custom="true" type="gradleReference"/>
     <source-file src="src/android/HyperTrackPlugin.java" target-dir="src/com/hypertrack/sdk/cordova/plugin" />
-    <source-file src="src/android/HyperTrackCordovaPluginMessagingService.java" target-dir="src/com/hypertrack/sdk/cordova/plugin" />
 
   </platform>
 

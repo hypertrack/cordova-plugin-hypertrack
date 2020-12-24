@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## [0.0.6] - 2020-12-24
 ### Changed
 - Updated to use Android SDK v4.9.0
 - Firebase messaging service conflict was fixed.

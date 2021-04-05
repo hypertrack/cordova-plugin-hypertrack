@@ -39,10 +39,15 @@ sdkHandle.setDeviceMetadata = function(deviceMetadata, success, error) {
 }
 
 /**
- * Add geotag
+ * Add geotag.
+ * 
+ * Adds a geotag, that contains arbitrary key-value data. Optional expected location argument
+ * allows you to catch deviations from expected action site, or (if isRestricted is set) to
+ * restrict geotag creation not farther from expected location then deviation argument. The latter
+ * is treated as specified in meters and have default value of 100 meters, if omitted.
  *
  * @param {Object} geotagData
- * @param {Object} expectedLocation    keys: latitude, longitude
+ * @param {Object} expectedLocation    keys: latitude, longitude, isRestricted {boolean}, deviation {Integer}
  * @param {function()} success - success callback.
  * @param {function(error)} errror - error callback.
  */

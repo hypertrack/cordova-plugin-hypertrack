@@ -16,6 +16,8 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObserver.OnTrackingStateChangeListener {
@@ -88,10 +90,37 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				case "addGeoTag":
 					throwIfNotInitialized();
 					String tagMetaJson = args.getString(0);
-					Map<String, Object> payload = mGson.fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
-					Location expectedLocation = getExpectedLocation(args);
-					sdkInstance.addGeotag(payload, expectedLocation);
-					callbackContext.success();
+					SerializedLocation expectedLocation = getExpectedLocation(args);
+					if (expectedLocation == null) {
+						Map<String, Object> payload = mGson.fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
+						sdkInstance.addGeotag(payload);
+						callbackContext.success();
+					} else if (expectedLocation.isRestricted == Boolean.TRUE) {
+						Log.i(TAG, "Adding restricted geotag");
+						Map<String, Object> payload = mGson.fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
+						Map<String,Serializable> tagData = new HashMap<>(payload.size());
+						for (Map.Entry<String, Object> entry : payload.entrySet()) {
+							if (entry.getValue() instanceof Serializable) {
+								tagData.put(entry.getKey(), (Serializable) entry.getValue());
+							}
+						}
+						int deviation = expectedLocation.deviation == null ? 100 : expectedLocation.deviation;
+						sdkInstance.addRestrictedGeotag(
+								tagData, expectedLocation.asLocation(), deviation,
+								new HyperTrack.ResultCallback<HyperTrack.Result>() {
+							@Override
+							public void onSuccess(HyperTrack.Result result) {
+								if (result == HyperTrack.Result.SUCCESS)
+									callbackContext.success();
+								else
+									callbackContext.error(result.ordinal());
+							}
+						});
+					} else {
+						Map<String, Object> payload = mGson.fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
+						sdkInstance.addGeotag(payload, expectedLocation.asLocation());
+						callbackContext.success();
+					}
 					return true;
 				case "requestPermissionsIfNecessary":
 					throwIfNotInitialized();
@@ -153,11 +182,12 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 		sdkInstance.addTrackingListener(this);
 	}
 
-	private Location getExpectedLocation(JSONArray args) {
+	private SerializedLocation getExpectedLocation(JSONArray args) {
 		if (args.length() < 2) return null;
-		SerializedLocation payload = mGson
-				.fromJson(args.optString(1), SerializedLocation.class);
-		return payload != null ? payload.asLocation() : null;
+		Log.i(TAG, "expected location argument " + args.optString(1));
+		SerializedLocation serializedLocation = mGson.fromJson(args.optString(1), SerializedLocation.class);
+		Log.i(TAG, "Serializedlocation " + serializedLocation);
+		return serializedLocation;
 	}
 
 	private void throwIfNotInitialized() throws IllegalStateException {
@@ -182,6 +212,8 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 	static class SerializedLocation{
 		@SerializedName("latitude") public double latitude = Double.NaN;
 		@SerializedName("longitude") public double lognitude = Double.NaN;
+		@SerializedName("deviation") public Integer deviation = null;
+		@SerializedName("isRestricted") public Boolean isRestricted = false;
 
 		Location asLocation() {
 			Location result = new Location("any");

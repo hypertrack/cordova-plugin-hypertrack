@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased
+## [0.1.0] - 2021-04-05
+### Added
+- Possibility to restrict a geotag to a certain location.
+### Changed
+- Updated to use Android SDK v4.11.0
+### Fixed
+- Start tracking from SDK on Android 11 won't ask for background location access.
 
 ## [0.0.6] - 2020-12-24
 ### Changed

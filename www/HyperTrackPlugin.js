@@ -49,7 +49,8 @@ sdkHandle.setDeviceMetadata = function(deviceMetadata, success, error) {
  * @param {Object} geotagData
  * @param {Object} expectedLocation    keys: latitude, longitude, isRestricted {boolean}, deviation {Integer}
  * @param {function()} success - success callback.
- * @param {function(error)} errror - error callback.
+ * @param {function(error)} errror - error callback. In case of restricted geotags error has 
+ * the following codes 1 if distance to expected location exceeds deviation and 2 if location isn't avaialble.
  */
 sdkHandle.addGeoTag = function(geotagData, expectedLocation, success, error) {
 	const geodataString = JSON.stringify(geotagData);

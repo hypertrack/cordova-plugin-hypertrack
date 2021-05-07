@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.1] - 2021-05-07
+### Changed
+- Updated to use Android SDK v4.12.0
+
 ## [0.1.0] - 2021-04-05
 ### Added
 - Possibility to restrict a geotag to a certain location.

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0] - 2021-05-23
+### Changed
+- Updated to use Android SDK v5.0.0
+### Added 
+- Geotag method returns geotag location or the reason, why it can't be determined
+### Removed
+- Possibility to restrict the geotag.
+
 ## [0.1.1] - 2021-05-07
 ### Changed
 - Updated to use Android SDK v4.12.0

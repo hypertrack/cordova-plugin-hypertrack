@@ -188,7 +188,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 	}
 
 	private JsonObject getLocation(GeotagResult result) {
-		assert result instanceof GeotagResult.Success
+		assert result instanceof GeotagResult.Success;
 		GeotagResult.Success success = (GeotagResult.Success) result;
 		return mGson.toJson(success.getDeviceLocation(), JsonObject.class);
 	}

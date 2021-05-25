@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.1] - 2021-05-25
+### Fixed
+- plugin import error fixed
+
 ## [0.2.0] - 2021-05-23
 ### Changed
 - Updated to use Android SDK v5.0.0

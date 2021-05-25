@@ -4,7 +4,6 @@ import android.location.Location;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.hypertrack.sdk.GeotagResult;
@@ -19,6 +18,8 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -99,7 +100,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 					GeotagResult result = sdkInstance.addGeotag(payload, expectedLocation.asLocation());
 					if (result instanceof  GeotagResult.Success) {
 						HTLogger.d(TAG, "Geotag created successfully " + result);
-						callbackContext.success(getLocation(result));
+						callbackContext.success(getLocationJson(result));
 					} else {
 						HTLogger.w(TAG, "Geotag error:" + result);
 						GeotagResult.Error error = (GeotagResult.Error) result;
@@ -187,10 +188,22 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 		}
 	}
 
-	private JsonObject getLocation(GeotagResult result) {
+	private JSONObject getLocationJson(GeotagResult result) {
 		assert result instanceof GeotagResult.Success;
 		GeotagResult.Success success = (GeotagResult.Success) result;
-		return mGson.toJson(success.getDeviceLocation(), JsonObject.class);
+		JSONObject json = new JSONObject();
+		Location location = success.getDeviceLocation();
+		try {
+			json.put("latitude", location.getLatitude());
+			json.put("longitude", location.getLongitude());
+			if (result instanceof GeotagResult.SuccessWithDeviation) {
+				GeotagResult.SuccessWithDeviation successWithDeviation = (GeotagResult.SuccessWithDeviation) success;
+				json.put("deviation", successWithDeviation.getDeviationDistance());
+			}
+		} catch (JSONException e) {
+			HTLogger.w(TAG, "Can't serialize Json", e);
+		}
+		return json;
 	}
 
 	@Override public void onError(TrackingError trackingError) { sendUpdate(trackingError.message); }

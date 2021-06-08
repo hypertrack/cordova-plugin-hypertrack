@@ -12,7 +12,6 @@ import com.hypertrack.sdk.ServiceNotificationConfig;
 import com.hypertrack.sdk.TrackingError;
 import com.hypertrack.sdk.TrackingStateObserver;
 import com.hypertrack.sdk.logger.HTLogger;
-import com.hypertrack.sdk.models.Geotag;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -21,8 +20,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObserver.OnTrackingStateChangeListener {
@@ -95,9 +92,9 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				case "addGeoTag":
 					throwIfNotInitialized();
 					String tagMetaJson = args.getString(0);
-					SerializedLocation expectedLocation = getExpectedLocation(args);
+					Location expectedLocation = getExpectedLocation(args);
 					Map<String, Object> payload = mGson.fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
-					GeotagResult result = sdkInstance.addGeotag(payload, expectedLocation.asLocation());
+					GeotagResult result = sdkInstance.addGeotag(payload, expectedLocation);
 					if (result instanceof  GeotagResult.Success) {
 						HTLogger.d(TAG, "Geotag created successfully " + result);
 						callbackContext.success(getLocationJson(result));
@@ -106,7 +103,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 						GeotagResult.Error error = (GeotagResult.Error) result;
 						callbackContext.error(error.getReason().ordinal());
 					}
-
+					return true;
 				case "requestPermissionsIfNecessary":
 					throwIfNotInitialized();
 					sdkInstance.requestPermissionsIfNecessary();
@@ -167,12 +164,12 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 		sdkInstance.addTrackingListener(this);
 	}
 
-	private SerializedLocation getExpectedLocation(JSONArray args) {
+	private Location getExpectedLocation(JSONArray args) {
 		if (args.length() < 2) return null;
 		Log.i(TAG, "expected location argument " + args.optString(1));
 		SerializedLocation serializedLocation = mGson.fromJson(args.optString(1), SerializedLocation.class);
 		Log.i(TAG, "Serializedlocation " + serializedLocation);
-		return serializedLocation;
+		return serializedLocation.asLocation();
 	}
 
 	private void throwIfNotInitialized() throws IllegalStateException {

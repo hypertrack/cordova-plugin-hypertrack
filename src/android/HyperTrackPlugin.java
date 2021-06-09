@@ -3,9 +3,12 @@ package com.hypertrack.sdk.cordova.plugin;
 import android.location.Location;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import com.hypertrack.sdk.Blocker;
 import com.hypertrack.sdk.GeotagResult;
 import com.hypertrack.sdk.HyperTrack;
 import com.hypertrack.sdk.ServiceNotificationConfig;
@@ -21,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
+import java.util.Set;
 
 public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObserver.OnTrackingStateChangeListener {
  
@@ -48,6 +52,10 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				case "enableDebugLogging":
 					HyperTrack.enableDebugLogging();
 					callbackContext.success();
+					return true;
+				case "getBlockers":
+					Set<Blocker> blockers = HyperTrack.getBlockers();
+					callbackContext.success(serializeBlockers(blockers));
 					return true;
 				case "getDeviceId":
 					throwIfNotInitialized();
@@ -183,6 +191,23 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 			statusUpdateCallback.sendPluginResult(result);
 
 		}
+	}
+
+	@NonNull
+	private JSONArray serializeBlockers(Set<Blocker> blockers) {
+		JSONArray result = new JSONArray();
+		for (Blocker blocker: blockers) {
+			try {
+				JSONObject serializedBlocker = new JSONObject();
+				serializedBlocker.put("userActionTitle", blocker.userActionTitle);
+				serializedBlocker.put("userActionExplanation", blocker.userActionExplanation);
+				serializedBlocker.put("userActionTitle", blocker.userActionTitle);
+				result.put(serializedBlocker);
+			} catch (JSONException e) {
+				Log.w(TAG, "Got exception serializing blocker.", e);
+			}
+		}
+		return result;
 	}
 
 	private JSONObject getLocationJson(GeotagResult result) {

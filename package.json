@@ -1,5 +1,5 @@
 {
-  "version": "0.2.1",
+  "version": "0.3.0",
   "name": "cordova-plugin-hypertrack-v3",
   "cordova_name": "Cordova HyperTrack Plugin",
   "description": "Cordova Plugin for native HyperTrack SDKs",

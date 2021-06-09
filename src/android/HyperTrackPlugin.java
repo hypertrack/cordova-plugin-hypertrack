@@ -57,6 +57,10 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 					Set<Blocker> blockers = HyperTrack.getBlockers();
 					callbackContext.success(serializeBlockers(blockers));
 					return true;
+				case "resolveBlocker":
+					String blockerCode = args.getString(0);
+					resolveBlocker(callbackContext, blockerCode);
+					return true;
 				case "getDeviceId":
 					throwIfNotInitialized();
 					String deviceId = sdkInstance.getDeviceID();
@@ -158,6 +162,25 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 
 	}
 
+	private void resolveBlocker(CallbackContext callbackContext, String blockerCode) {
+		switch (blockerCode) {
+			case "OL1": Blocker.LOCATION_PERMISSION_DENIED.resolve();
+						callbackContext.success();
+						break;
+			case "OS1": Blocker.LOCATION_SERVICE_DISABLED.resolve();
+						callbackContext.success();
+						break;
+			case "OA1": Blocker.ACTIVITY_PERMISSION_DENIED.resolve();
+						callbackContext.success();
+						break;
+			case "OL2": Blocker.BACKGROUND_LOCATION_DENIED.resolve();
+						callbackContext.success();
+						break;
+			default:
+				callbackContext.error("Unknown blocker code " + blockerCode);
+		}
+	}
+
 	private void disposeTrackingStateChannel() {
 		sdkInstance.removeTrackingListener(this);
 		if (statusUpdateCallback != null) {
@@ -202,6 +225,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				serializedBlocker.put("userActionTitle", blocker.userActionTitle);
 				serializedBlocker.put("userActionExplanation", blocker.userActionExplanation);
 				serializedBlocker.put("userActionTitle", blocker.userActionTitle);
+				serializedBlocker.put("code", blocker.code);
 				result.put(serializedBlocker);
 			} catch (JSONException e) {
 				Log.w(TAG, "Got exception serializing blocker.", e);

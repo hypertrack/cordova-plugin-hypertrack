@@ -224,7 +224,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				JSONObject serializedBlocker = new JSONObject();
 				serializedBlocker.put("userActionTitle", blocker.userActionTitle);
 				serializedBlocker.put("userActionExplanation", blocker.userActionExplanation);
-				serializedBlocker.put("userActionTitle", blocker.userActionTitle);
+				serializedBlocker.put("userActionCTA", blocker.userActionCTA);
 				serializedBlocker.put("code", blocker.code);
 				result.put(serializedBlocker);
 			} catch (JSONException e) {

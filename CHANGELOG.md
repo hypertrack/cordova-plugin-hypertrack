@@ -1,5 +1,31 @@
 # Changelog
 
+## Unreleased
+### Changed
+- Updated to ue Android SDK v5.2.0
+### Added
+- `getBlockers` method that returns a list of issues, that must be resolved for the reliable tracking. E.g. you can block user access to the screen, that enables tracking feature, utill all the blockers are resolved using the following approach:
+    ```js
+    hypertrack.getBlockers(
+        function(blockers) {
+            let dialogConfig  = [];
+            blockers.forEach(blocker => 
+                let menuItem = {
+                    title: blocker.userActionTitle,
+                    buttonName: blocker.userActionCTA,
+                    onClick: function() {blocker.resolve(success, error);},
+                    actionExplanation: blocker.userActionExplanation
+                };
+                dialogConfig.push(menuItem);
+            );
+            if (dialogConfig.length) showErrorDialog(dialogConfig);
+        },
+        function(error) {
+            console.log("Can't get blockers due to the error: " + error);
+        }
+    );
+    ```
+
 ## [0.2.1] - 2021-05-25
 ### Fixed
 - plugin import error fixed

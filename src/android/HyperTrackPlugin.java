@@ -3,16 +3,18 @@ package com.hypertrack.sdk.cordova.plugin;
 import android.location.Location;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import com.hypertrack.sdk.Blocker;
 import com.hypertrack.sdk.GeotagResult;
 import com.hypertrack.sdk.HyperTrack;
 import com.hypertrack.sdk.ServiceNotificationConfig;
 import com.hypertrack.sdk.TrackingError;
 import com.hypertrack.sdk.TrackingStateObserver;
 import com.hypertrack.sdk.logger.HTLogger;
-import com.hypertrack.sdk.models.Geotag;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -21,9 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObserver.OnTrackingStateChangeListener {
  
@@ -51,6 +52,14 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				case "enableDebugLogging":
 					HyperTrack.enableDebugLogging();
 					callbackContext.success();
+					return true;
+				case "getBlockers":
+					Set<Blocker> blockers = HyperTrack.getBlockers();
+					callbackContext.success(serializeBlockers(blockers));
+					return true;
+				case "resolveBlocker":
+					String blockerCode = args.getString(0);
+					resolveBlocker(callbackContext, blockerCode);
 					return true;
 				case "getDeviceId":
 					throwIfNotInitialized();
@@ -95,9 +104,9 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				case "addGeoTag":
 					throwIfNotInitialized();
 					String tagMetaJson = args.getString(0);
-					SerializedLocation expectedLocation = getExpectedLocation(args);
+					Location expectedLocation = getExpectedLocation(args);
 					Map<String, Object> payload = mGson.fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
-					GeotagResult result = sdkInstance.addGeotag(payload, expectedLocation.asLocation());
+					GeotagResult result = sdkInstance.addGeotag(payload, expectedLocation);
 					if (result instanceof  GeotagResult.Success) {
 						HTLogger.d(TAG, "Geotag created successfully " + result);
 						callbackContext.success(getLocationJson(result));
@@ -106,7 +115,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 						GeotagResult.Error error = (GeotagResult.Error) result;
 						callbackContext.error(error.getReason().ordinal());
 					}
-
+					return true;
 				case "requestPermissionsIfNecessary":
 					throwIfNotInitialized();
 					sdkInstance.requestPermissionsIfNecessary();
@@ -153,6 +162,25 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 
 	}
 
+	private void resolveBlocker(CallbackContext callbackContext, String blockerCode) {
+		switch (blockerCode) {
+			case "OL1": Blocker.LOCATION_PERMISSION_DENIED.resolve();
+						callbackContext.success();
+						break;
+			case "OS1": Blocker.LOCATION_SERVICE_DISABLED.resolve();
+						callbackContext.success();
+						break;
+			case "OA1": Blocker.ACTIVITY_PERMISSION_DENIED.resolve();
+						callbackContext.success();
+						break;
+			case "OL2": Blocker.BACKGROUND_LOCATION_DENIED.resolve();
+						callbackContext.success();
+						break;
+			default:
+				callbackContext.error("Unknown blocker code " + blockerCode);
+		}
+	}
+
 	private void disposeTrackingStateChannel() {
 		sdkInstance.removeTrackingListener(this);
 		if (statusUpdateCallback != null) {
@@ -167,12 +195,12 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 		sdkInstance.addTrackingListener(this);
 	}
 
-	private SerializedLocation getExpectedLocation(JSONArray args) {
+	private Location getExpectedLocation(JSONArray args) {
 		if (args.length() < 2) return null;
 		Log.i(TAG, "expected location argument " + args.optString(1));
 		SerializedLocation serializedLocation = mGson.fromJson(args.optString(1), SerializedLocation.class);
 		Log.i(TAG, "Serializedlocation " + serializedLocation);
-		return serializedLocation;
+		return serializedLocation.asLocation();
 	}
 
 	private void throwIfNotInitialized() throws IllegalStateException {
@@ -186,6 +214,24 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 			statusUpdateCallback.sendPluginResult(result);
 
 		}
+	}
+
+	@NonNull
+	private JSONArray serializeBlockers(Set<Blocker> blockers) {
+		JSONArray result = new JSONArray();
+		for (Blocker blocker: blockers) {
+			try {
+				JSONObject serializedBlocker = new JSONObject();
+				serializedBlocker.put("userActionTitle", blocker.userActionTitle);
+				serializedBlocker.put("userActionExplanation", blocker.userActionExplanation);
+				serializedBlocker.put("userActionCTA", blocker.userActionCTA);
+				serializedBlocker.put("code", blocker.code);
+				result.put(serializedBlocker);
+			} catch (JSONException e) {
+				Log.w(TAG, "Got exception serializing blocker.", e);
+			}
+		}
+		return result;
 	}
 
 	private JSONObject getLocationJson(GeotagResult result) {

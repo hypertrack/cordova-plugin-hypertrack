@@ -309,6 +309,27 @@ var hypertrack = {
         }
         exec(success_cb, error_cb, "HyperTrackPlugin", 'enableDebugLogging', []);
     },
+
+	/**
+	 * Get the list of blockers that needs to be resolved for reliable tracking.
+	 * 
+	 * @param {Function} success success callback that retrieves a list of current blockers
+	 * @param {Function} error error callback
+	 */
+	getBlockers: function(success, error) {
+		console.log("HyperTrack:getBlockers");
+		const success_cb = function(blockers) {
+			console.log("Got blockers lists " + blockers);
+			blockers.forEach(blocker => 
+				blocker.resolve = function(success2, error2) {
+					console.log("Resolving blocker " + blocker.code);
+					exec(success2, error2, "HyperTrackPlugin", 'resolveBlocker', [blocker.code]);
+				}
+			);
+			if (typeof(success) == 'function') {success(blockers); }
+		}
+		exec(success_cb, error, "HyperTrackPlugin", "getBlockers", []);
+	},
     /**
      * Initialize SDK.
      *

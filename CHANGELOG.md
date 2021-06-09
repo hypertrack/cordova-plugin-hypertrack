@@ -1,5 +1,34 @@
 # Changelog
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## Unreleased
+### Changed
+- Updated to ue Android SDK v5.2.0
+### Added
+- `getBlockers` method that returns a list of issues, that must be resolved for the reliable tracking. E.g. you can block user access to the screen, that enables tracking feature, utill all the blockers are resolved using the following approach:
+    ```js
+    hypertrack.getBlockers(
+        function(blockers) {
+            let dialogConfig  = [];
+            blockers.forEach(blocker => 
+                let menuItem = {
+                    title: blocker.userActionTitle,
+                    buttonName: blocker.userActionCTA,
+                    onClick: function() {blocker.resolve(success, error);},
+                    actionExplanation: blocker.userActionExplanation
+                };
+                dialogConfig.push(menuItem);
+            );
+            if (dialogConfig.length) showErrorDialog(dialogConfig);
+        },
+        function(error) {
+            console.log("Can't get blockers due to the error: " + error);
+        }
+    );
+    ```
+
 ## [0.2.1] - 2021-05-25
 ### Fixed
 - plugin import error fixed
@@ -53,3 +82,15 @@
 ##  [0.0.1] - 2020-07-29
 ### Added
 - Cordova support for HyperTrack Android SDK v4.5.3
+
+[unreleased]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.1.1...v0.2.0
+[0.1.1]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.0.6...v0.1.0
+[0.0.6]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.0.5...v0.0.6
+[0.0.5]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.0.4...v0.0.5
+[0.0.4]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.0.3...v0.0.4
+[0.0.3]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.0.2...v0.0.3
+[0.0.2]: https://github.com/hypertrack/cordova-plugin-hypertrack/compare/v0.0.1...v0.0.2
+[0.0.1]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/tag/v0.0.1

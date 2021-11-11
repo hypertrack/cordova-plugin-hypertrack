@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2021-11-11
+### Changed
+- Updated Hypertrack Android SDK to [5.4.5](https://github.com/hypertrack/sdk-android/releases/tag/v5.4.5)
+
 ## [0.4.1] - 2021-08-25
 ### Changed
 - Updated to ue Android SDK v5.4.0

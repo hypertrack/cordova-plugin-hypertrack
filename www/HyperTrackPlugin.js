@@ -143,6 +143,58 @@ sdkHandle.stop = function(success, error) {
 	exec(success, error, "HyperTrackPlugin", 'stop', []);
 }
 
+/**
+ * Get the latest device location that was sent by the SDK.
+ * This method is available only for Android platform.
+ * 
+ * Result object:
+ * Either location
+ * { 
+ *     "type": "location",
+ *     "latitiude": number, 
+ *     "longitude": number 
+ * }
+ * Or outage:
+ * {
+ *     "type": "outage",
+ *     "code": number, 
+ *     "name": string 
+ * }
+ *
+ * @param {function(object)} success - callback that recieves the location JSON.
+ * @param {function(error)} errror - error callback.
+ */
+ sdkHandle.getLatestLocation = function(success, error) {
+	console.log("HyperTrack:getLatestLocation");
+	exec(success, error, "HyperTrackPlugin", 'getLatestLocation', []);
+}
+
+/**
+ * Get the current device location from system location provider.
+ * This method is available only for Android platform.
+ * 
+ * Result object:
+ * Either location
+ * { 
+ *     "type": "location",
+ *     "latitiude": number, 
+ *     "longitude": number 
+ * }
+ * Or outage:
+ * {
+ *     "type": "outage",
+ *     "code": number, 
+ *     "name": string 
+ * }
+ *
+ * @param {function(object)} success - callback that recieves the location JSON.
+ * @param {function(error)} errror - error callback.
+ */
+ sdkHandle.getCurrentLocation = function(success, error) {
+	console.log("HyperTrack:getCurrentLocation");
+	exec(success, error, "HyperTrackPlugin", 'getCurrentLocation', []);
+}
+
 /* ------------ */
 /* Internal API */
 /* ------------ */

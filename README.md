@@ -3,7 +3,7 @@
 ![GitHub](https://img.shields.io/github/license/hypertrack/sdk-react-native.svg)
 ![npm](https://img.shields.io/npm/v/hypertrack-sdk-react-native.svg)
 [![iOS SDK](https://img.shields.io/badge/iOS%20SDK-4.8.0-brightgreen.svg)](https://cocoapods.org/pods/HyperTrack)
-![Android SDK](https://img.shields.io/badge/Android%20SDK-5.4.5-brightgreen.svg)
+![Android SDK](https://img.shields.io/badge/Android%20SDK-6.0.4-brightgreen.svg)
 
 HyperTrack lets you add live location tracking to your mobile app. Live location is made available along with ongoing activity, tracking controls and tracking outage with reasons.
 
@@ -44,7 +44,7 @@ Check out our [Quickstart](https://github.com/hypertrack/quickstart-cordova/) fo
 
 3. Update CHANGELOG
 4. Update README badge
-5. Create a version tag (`v<version>`)
+5. Create a version tag
 6. Commit and push
 7. Create a release
     - Release title - version

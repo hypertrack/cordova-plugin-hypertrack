@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-hypertrack-v3"
-    version="0.6.1">
+    version="0.6.2">
   <name>HyperTrackPlugin</name>
   <description>Cordova HyperTrack Plugin</description>
   <license>MIT</license>
@@ -58,7 +58,7 @@
         <source url="https://cdn.cocoapods.org/" />
       </config>
       <pods use-frameworks="true">
-        <pod name="HyperTrack/Objective-C" version="4.8.0"/>
+        <pod name="HyperTrack/Objective-C" version="4.12.3"/>
       </pods>
     </podspec>
 

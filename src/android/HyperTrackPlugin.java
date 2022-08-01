@@ -1,13 +1,11 @@
 package com.hypertrack.sdk.cordova.plugin;
 
 import android.location.Location;
+import android.location.LocationManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
 import com.hypertrack.sdk.AsyncResultReceiver;
 import com.hypertrack.sdk.Blocker;
 import com.hypertrack.sdk.GeotagResult;
@@ -26,6 +24,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,8 +37,6 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 	
 	private HyperTrack sdkInstance;
 	private CallbackContext statusUpdateCallback;
-
-	private final Gson mGson = new Gson();
 	 
 	@Override	 
 	public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) {
@@ -88,7 +88,8 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				case "setDeviceMetadata":
 					throwIfNotInitialized();
 					String deviceMetaJson = args.getString(0);
-					Map<String, Object> meta = mGson.fromJson(deviceMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
+					JSONObject deviceMetaJsonObject = new JSONObject(deviceMetaJson);
+					Map<String, Object> meta = jsonToMap(deviceMetaJsonObject);
 					sdkInstance.setDeviceMetadata(meta);
 					callbackContext.success();
 					return true;
@@ -108,7 +109,8 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 					throwIfNotInitialized();
 					String tagMetaJson = args.getString(0);
 					Location expectedLocation = getExpectedLocation(args);
-					Map<String, Object> payload = mGson.fromJson(tagMetaJson, new TypeToken<Map<String, Object>>() {}.getType());
+					JSONObject tagMetaJsonObject = new JSONObject(tagMetaJson);
+					Map<String, Object> payload = jsonToMap(tagMetaJsonObject);
 					GeotagResult result = sdkInstance.addGeotag(payload, expectedLocation);
 					if (result instanceof  GeotagResult.Success) {
 						HTLogger.d(TAG, "Geotag created successfully " + result);
@@ -210,12 +212,17 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 		sdkInstance.addTrackingListener(this);
 	}
 
-	private Location getExpectedLocation(JSONArray args) {
+	private Location getExpectedLocation(JSONArray args) throws JSONException {
 		if (args.length() < 2) return null;
 		Log.i(TAG, "expected location argument " + args.optString(1));
-		SerializedLocation serializedLocation = mGson.fromJson(args.optString(1), SerializedLocation.class);
-		Log.i(TAG, "Serializedlocation " + serializedLocation);
-		return serializedLocation.asLocation();
+		String coordinates = args.optString(1);
+		JSONObject coordinate = new JSONObject(coordinates);
+		Double latitude = coordinate.getDouble("latitude");
+		Double longitude = coordinate.getDouble("longitude");
+		Location expectedLocation = new Location(LocationManager.GPS_PROVIDER);
+		expectedLocation.setLatitude(latitude);
+		expectedLocation.setLongitude(longitude);
+		return  expectedLocation;
 	}
 
 	private void throwIfNotInitialized() throws IllegalStateException {
@@ -322,24 +329,55 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 		return json;
 	}
 
+	private Map<String, Object> jsonToMap(JSONObject json) throws JSONException {
+		Map<String, Object> retMap = new HashMap<String, Object>();
+
+		if (json != JSONObject.NULL) {
+			retMap = toMap(json);
+		}
+		return retMap;
+	}
+
+	private Map<String, Object> toMap(JSONObject object) throws JSONException {
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		Iterator<String> keysItr = object.keys();
+		while(keysItr.hasNext()) {
+			String key = keysItr.next();
+			Object value = object.get(key);
+
+			if (value instanceof JSONArray) {
+				value = toList((JSONArray) value);
+			}
+
+			else if (value instanceof JSONObject) {
+				value = toMap((JSONObject) value);
+			}
+			map.put(key, value);
+		}
+		return map;
+	}
+
+	private List<Object> toList(JSONArray array) throws JSONException {
+		List<Object> list = new ArrayList<Object>();
+		for(int i = 0; i < array.length(); i++) {
+			Object value = array.get(i);
+			if (value instanceof JSONArray) {
+				value = toList((JSONArray) value);
+			}
+
+			else if(value instanceof JSONObject) {
+				value = toMap((JSONObject) value);
+			}
+			list.add(value);
+		}
+		return list;
+	}
+
 	@Override public void onError(TrackingError trackingError) { sendUpdate(trackingError.message); }
 
 	@Override public void onTrackingStart() { sendUpdate("start"); }
 
 	@Override public void onTrackingStop() { sendUpdate("stop"); }
-
-	static class SerializedLocation{
-		@SerializedName("latitude") public double latitude = Double.NaN;
-		@SerializedName("longitude") public double lognitude = Double.NaN;
-		@SerializedName("deviation") public Integer deviation = null;
-		@SerializedName("isRestricted") public Boolean isRestricted = false;
-
-		Location asLocation() {
-			Location result = new Location("any");
-			result.setLatitude(latitude);
-			result.setLongitude(lognitude);
-			return result;
-		}
-	}
 
 }

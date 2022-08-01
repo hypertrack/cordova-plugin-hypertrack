@@ -5,7 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.3] - 2022-07-29
 ### Changed
-- Fix missing Gson dependency issue
+- Fix issue with missing com.google.gson dependency
 
 ## [0.6.2] - 2022-07-08
 ### Changed

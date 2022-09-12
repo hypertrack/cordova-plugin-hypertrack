@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.4] - 2022-07-08
+### Changed
+- Updated Hypertrack Android SDK to [6.2.2](https://github.com/hypertrack/sdk-android/blob/master/CHANGELOG.md#622---2022-08-30)
+
 ## [0.6.3] - 2022-07-29
 ### Changed
 - Fix issue with missing com.google.gson dependency

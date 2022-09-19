@@ -14,8 +14,6 @@ import com.hypertrack.sdk.ServiceNotificationConfig;
 import com.hypertrack.sdk.TrackingError;
 import com.hypertrack.sdk.TrackingStateObserver;
 import com.hypertrack.sdk.logger.HTLogger;
-import com.hypertrack.sdk.Result;
-import com.hypertrack.sdk.OutageReason;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -154,19 +152,6 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 					unsubscribeResult.setKeepCallback(true);
 					callbackContext.sendPluginResult(unsubscribeResult);
 					return true;
-				case "getLatestLocation":
-				throwIfNotInitialized();
-					callbackContext.success(createLocationResult(sdkInstance.getLatestLocation()));
-					return true;
-				case "getCurrentLocation":
-					throwIfNotInitialized();
-					sdkInstance.getCurrentLocation(new AsyncResultReceiver<Location, OutageReason>() {
-						@Override
-						public void onResult(Result<Location, OutageReason> result) {
-							callbackContext.success(createLocationResult(result));
-				}
-					});
-				return true;
 				default:
 					callbackContext.error("Method not found");
 					return false;
@@ -255,50 +240,6 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 		}
 		return result;
 	}
-	
-	private JSONObject createLocationResult(Result<Location, OutageReason> locationResult) {
-		if(locationResult.isSuccess()) {
-			return createLocationSuccessResult(locationResult.getValue());
-		} else {
-			return createOutageLocationResult(locationResult.getError());
-		}
-	}
-	
-	private JSONObject createLocationSuccessResult(Location location) {
-		JSONObject serializedResult = new JSONObject();
-		try {
-			serializedResult.put("type", "location");
-			serializedResult.put(
-					"location",
-					getLocationJson(location)
-			);
-		} catch (JSONException e) {
-			HTLogger.w(TAG, "Can't serialize Json", e);
-		}
-		return serializedResult;
-	}
-
-	private JSONObject createOutageLocationResult(OutageReason outage) {
-		JSONObject serializedResult = new JSONObject();
-		try {
-			serializedResult.put("type", "outage");
-			serializedResult.put("outage", getOutageJson(outage));
-		} catch (JSONException e) {
-			HTLogger.w(TAG, "Can't serialize Json", e);
-		}
-		return serializedResult;
-	}
-	
-	private JSONObject getOutageJson(OutageReason outage) {
-		JSONObject json = new JSONObject();
-		try {
-			json.put("code", outage.ordinal());
-			json.put("name", outage.name());
-		} catch (JSONException e) {
-			HTLogger.w(TAG, "Can't serialize Json", e);
-		}
-		return json;
-	}
 
 	private JSONObject getLocationJson(GeotagResult result) {
 		assert result instanceof GeotagResult.Success;
@@ -312,17 +253,6 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
 				GeotagResult.SuccessWithDeviation successWithDeviation = (GeotagResult.SuccessWithDeviation) success;
 				json.put("deviation", successWithDeviation.getDeviationDistance());
 			}
-		} catch (JSONException e) {
-			HTLogger.w(TAG, "Can't serialize Json", e);
-		}
-		return json;
-	}
-
-	private JSONObject getLocationJson(Location location) {
-		JSONObject json = new JSONObject();
-		try {
-			json.put("latitude", location.getLatitude());
-			json.put("longitude", location.getLongitude());
 		} catch (JSONException e) {
 			HTLogger.w(TAG, "Can't serialize Json", e);
 		}

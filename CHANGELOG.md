@@ -3,6 +3,33 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2023-02-10
+### Changed
+- Updated HyperTrack Android SDK to 6.4.0
+- Updated HyperTrack iOS SDK to 4.14.0
+- Plugin exported object renamed from `hypertrack` to `HyperTrack`
+- `setDeviceName()` renamed to `setName()`
+- `setDeviceMetadata()` renamed to `setMetadata()`
+- `addGeoTag()` renamed to `addGeotag()`
+- `syncDeviceSettings()` renamed to `sync()`
+### Added
+- `subscribeToTracking()`
+- `subscribeToAvailability()`
+- `subscribeToErrors()`
+- `unsubscribeFromTracking()`
+- `unsubscribeFromAvailability()`
+- `unsubscribeFromErrors()`
+- `isAvailable()`
+- `setAvailability()`
+- Location result for `addGeotag`
+- `getLocation()`
+### Removed
+- `getBlockers()`
+- `requestPermissionsIfNecessary()`
+- `allowMockLocations()` (use `allowMockLocations` param in `initialize()` istead)
+- `setTrackingNotificationProperties()`
+- `isRunning`
+
 ## [0.6.4] - 2022-07-08
 ### Changed
 - Updated Hypertrack Android SDK to [6.2.2](https://github.com/hypertrack/sdk-android/blob/master/CHANGELOG.md#622---2022-08-30)

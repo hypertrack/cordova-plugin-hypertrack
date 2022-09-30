@@ -1,8 +1,8 @@
-var exec = require('cordova/exec');
+var exec = require("cordova/exec");
 var platform = window.cordova.platformId;
 var channel = require("cordova/channel");
 
-const sdkHandle = { }
+const sdkHandle = {};
 
 /**
  * Get the device Id.
@@ -10,10 +10,10 @@ const sdkHandle = { }
  * @param {function(string)} success - callback that recieves the deviceId string.
  * @param {function(error)} errror - error callback.
  */
-sdkHandle.getDeviceId = function(success, error) {
-	console.log("HyperTrack:getDeviceId");
-	exec(success, error, "HyperTrackPlugin", 'getDeviceId', []);
-}
+sdkHandle.getDeviceId = function (success, error) {
+  console.log("HyperTrack:getDeviceId");
+  exec(success, error, "HyperTrackPlugin", "getDeviceId", []);
+};
 
 /**
  * Set the device name.
@@ -21,10 +21,10 @@ sdkHandle.getDeviceId = function(success, error) {
  * @param {function()} success - success callback.
  * @param {function(error)} errror - error callback.
  */
-sdkHandle.setDeviceName = function(deviceName, success, error) {
-	console.log("HyperTrack:setDeviceName " + deviceName);
-	exec(success, error, "HyperTrackPlugin", 'setDeviceName', [deviceName]);
-}
+sdkHandle.setDeviceName = function (deviceName, success, error) {
+  console.log("HyperTrack:setDeviceName " + deviceName);
+  exec(success, error, "HyperTrackPlugin", "setDeviceName", [deviceName]);
+};
 
 /**
  * Set the device metadata
@@ -32,15 +32,17 @@ sdkHandle.setDeviceName = function(deviceName, success, error) {
  * @param {function()} success - success callback.
  * @param {function(error)} errror - error callback.
  */
-sdkHandle.setDeviceMetadata = function(deviceMetadata, success, error) {
-	const metadataString = JSON.stringify(deviceMetadata);
-	console.log("HyperTrack:setDeviceMetadata " + metadataString);
-	exec(success, error, "HyperTrackPlugin", 'setDeviceMetadata', [metadataString]);
-}
+sdkHandle.setDeviceMetadata = function (deviceMetadata, success, error) {
+  const metadataString = JSON.stringify(deviceMetadata);
+  console.log("HyperTrack:setDeviceMetadata " + metadataString);
+  exec(success, error, "HyperTrackPlugin", "setDeviceMetadata", [
+    metadataString,
+  ]);
+};
 
 /**
  * Add geotag.
- * 
+ *
  * Adds a geotag, that contains arbitrary key-value data with optional expected location argument.
  *
  * @param {Object} geotagData
@@ -56,12 +58,17 @@ sdkHandle.setDeviceMetadata = function(deviceMetadata, success, error) {
  * 5 if no GNSS signal is available
  * 6 if app restart required to enable geolocation.
  */
-sdkHandle.addGeoTag = function(geotagData, expectedLocation, success, error) {
-	const geodataString = JSON.stringify(geotagData);
-	const locationString = JSON.stringify(expectedLocation);
-	console.log("HyperTrack:addGeoTag " + geodataString + ", location " + locationString);
-	exec(success, error, "HyperTrackPlugin", 'addGeoTag', [geodataString, locationString]);
-}
+sdkHandle.addGeoTag = function (geotagData, expectedLocation, success, error) {
+  const geodataString = JSON.stringify(geotagData);
+  const locationString = JSON.stringify(expectedLocation);
+  console.log(
+    "HyperTrack:addGeoTag " + geodataString + ", location " + locationString
+  );
+  exec(success, error, "HyperTrackPlugin", "addGeoTag", [
+    geodataString,
+    locationString,
+  ]);
+};
 
 /**
  * Request permissions if required
@@ -69,10 +76,10 @@ sdkHandle.addGeoTag = function(geotagData, expectedLocation, success, error) {
  * @param {function()} success - success callback.
  * @param {function(error)} errror - error callback.
  */
-sdkHandle.requestPermissionsIfNecessary = function(success, error) {
-	console.log("HyperTrack:requestPermissionsIfNecessary");
-	exec(success, error, "HyperTrackPlugin", 'requestPermissionsIfNecessary', []);
-}
+sdkHandle.requestPermissionsIfNecessary = function (success, error) {
+  console.log("HyperTrack:requestPermissionsIfNecessary");
+  exec(success, error, "HyperTrackPlugin", "requestPermissionsIfNecessary", []);
+};
 
 /**
  * Allow mock locations for testing
@@ -80,10 +87,10 @@ sdkHandle.requestPermissionsIfNecessary = function(success, error) {
  * @param {function()} success - success callback.
  * @param {function(error)} errror - error callback.
  */
-sdkHandle.allowMockLocations = function(success, error) {
-	console.log("HyperTrack:allowMockLocations");
-	exec(success, error, "HyperTrackPlugin", 'allowMockLocations', []);
-}
+sdkHandle.allowMockLocations = function (success, error) {
+  console.log("HyperTrack:allowMockLocations");
+  exec(success, error, "HyperTrackPlugin", "allowMockLocations", []);
+};
 
 /**
  * Change foreground service notification properties (Android Only)
@@ -91,10 +98,23 @@ sdkHandle.allowMockLocations = function(success, error) {
  * @param {function()} success - success callback.
  * @param {function(error)} errror - error callback.
  */
-sdkHandle.setTrackingNotificationProperties = function(title, message, success, error) {
-	console.log("HyperTrack:setTrackingNotificationProperties " + title + ", " + message);
-	exec(success, error, "HyperTrackPlugin", 'setTrackingNotificationProperties', [title, message]);
-}
+sdkHandle.setTrackingNotificationProperties = function (
+  title,
+  message,
+  success,
+  error
+) {
+  console.log(
+    "HyperTrack:setTrackingNotificationProperties " + title + ", " + message
+  );
+  exec(
+    success,
+    error,
+    "HyperTrackPlugin",
+    "setTrackingNotificationProperties",
+    [title, message]
+  );
+};
 
 /**
  * Sync device's tracking state with the platform
@@ -102,10 +122,10 @@ sdkHandle.setTrackingNotificationProperties = function(title, message, success, 
  * @param {function()} success - success callback.
  * @param {function(error)} errror - error callback.
  */
- sdkHandle.syncDeviceSettings = function(success, error) {
-	console.log("HyperTrack:syncDeviceSettings");
-	exec(success, error, "HyperTrackPlugin", 'syncDeviceSettings', []);
-}
+sdkHandle.syncDeviceSettings = function (success, error) {
+  console.log("HyperTrack:syncDeviceSettings");
+  exec(success, error, "HyperTrackPlugin", "syncDeviceSettings", []);
+};
 
 /**
  * If tracking service is running
@@ -114,10 +134,65 @@ sdkHandle.setTrackingNotificationProperties = function(title, message, success, 
  * @param {function(number)} success - receives 1 as a callback agrument if sdk tracking service is running and 0 othewise.
  * @param {function(error)} errror - error callback.
  */
-sdkHandle.isRunning = function(success, error) {
-	console.log("HyperTrack:isRunning");
-	exec(success, error, "HyperTrackPlugin", 'isRunning', []);
-}
+sdkHandle.isRunning = function (success, error) {
+  console.log("HyperTrack:isRunning");
+  const success_cb = function (status) {
+    if (typeof success == "function") {
+      success(status === 1 ? true : false);
+    }
+  };
+  const error_cb = function (err) {
+    if (typeof error == "function") {
+      error(err);
+    }
+  };
+  exec(success_cb, error_cb, "HyperTrackPlugin", "isRunning", []);
+};
+
+/**
+ * Reflects tracking intent.
+ *
+ *
+ * @param {function(number)} success - success callback.
+ * @param {function(error)} errror - error callback.
+ */
+sdkHandle.isTracking = function (success, error) {
+  console.log("HyperTrack:isTracking");
+  const success_cb = function (status) {
+    if (typeof success == "function") {
+      success(status === 1 ? true : false);
+    }
+  };
+  const error_cb = function (err) {
+    if (typeof error == "function") {
+      error(err);
+    }
+  };
+  exec(success_cb, error_cb, "HyperTrackPlugin", "isTracking", []);
+};
+
+/**
+ * Sets device's availability for nearby search.
+ *
+ *
+ * @param {function()} success - success callback.
+ * @param {function(error)} errror - error callback.
+ */
+sdkHandle.setAvailability = function (isAvailable, success, error) {
+  console.log("HyperTrack:setAvailability");
+  exec(success, error, "HyperTrackPlugin", "setAvailability", [isAvailable]);
+};
+
+/**
+ * Resolves device's availability for nearby search.
+ *
+ * @param {function(string)} success - success callback.
+ * @param {function(error)} errror - error callback.
+ */
+sdkHandle.getAvailability = function (success, error) {
+  console.log("HyperTrack:getAvailability");
+  exec(success, error, "HyperTrackPlugin", "getAvailability", []);
+};
 
 /**
  * Start tracking service
@@ -126,10 +201,10 @@ sdkHandle.isRunning = function(success, error) {
  * @param {function(number)} success - - success callback.
  * @param {function(error)} errror - error callback.
  */
-sdkHandle.start = function(success, error) {
-	console.log("HyperTrack:start");
-	exec(success, error, "HyperTrackPlugin", 'start', []);
-}
+sdkHandle.start = function (success, error) {
+  console.log("HyperTrack:start");
+  exec(success, error, "HyperTrackPlugin", "start", []);
+};
 
 /**
  * Stop tracking service
@@ -138,62 +213,58 @@ sdkHandle.start = function(success, error) {
  * @param {function(number)} success - - success callback.
  * @param {function(error)} errror - error callback.
  */
-sdkHandle.stop = function(success, error) {
-	console.log("HyperTrack:stop");
-	exec(success, error, "HyperTrackPlugin", 'stop', []);
-}
+sdkHandle.stop = function (success, error) {
+  console.log("HyperTrack:stop");
+  exec(success, error, "HyperTrackPlugin", "stop", []);
+};
 
 /**
- * Get the latest device location that was sent by the SDK.
- * This method is available only for Android platform.
- * 
- * Result object:
- * Either location
- * { 
- *     "type": "location",
- *     "latitiude": number, 
- *     "longitude": number 
- * }
- * Or outage:
- * {
- *     "type": "outage",
- *     "code": number, 
- *     "name": string 
- * }
+ * Allows tracking hypertrack sdk  listener.
  *
- * @param {function(object)} success - callback that recieves the location JSON.
+ *
+ * @param {function(string)} success - success callback.
  * @param {function(error)} errror - error callback.
  */
- sdkHandle.getLatestLocation = function(success, error) {
-	console.log("HyperTrack:getLatestLocation");
-	exec(success, error, "HyperTrackPlugin", 'getLatestLocation', []);
-}
+sdkHandle.trackingStateChange = function (success, error) {
+  console.log("HyperTrack:trackingStateChange");
+  exec(success, error, "HyperTrackPlugin", "trackingStateChange", []);
+};
 
 /**
- * Get the current device location from system location provider.
- * This method is available only for Android platform.
- * 
- * Result object:
- * Either location
- * { 
- *     "type": "location",
- *     "latitiude": number, 
- *     "longitude": number 
- * }
- * Or outage:
- * {
- *     "type": "outage",
- *     "code": number, 
- *     "name": string 
- * }
+ * Stops tracking hypertrack sdk  listener.
  *
- * @param {function(object)} success - callback that recieves the location JSON.
+ *
+ * @param {function(string)} success - success callback.
  * @param {function(error)} errror - error callback.
  */
- sdkHandle.getCurrentLocation = function(success, error) {
-	console.log("HyperTrack:getCurrentLocation");
-	exec(success, error, "HyperTrackPlugin", 'getCurrentLocation', []);
-}
+sdkHandle.disposeTrackingState = function (success, error) {
+  console.log("HyperTrack:disposeTrackingState");
+  exec(success, error, "HyperTrackPlugin", "disposeTrackingState", []);
+};
+
+/**
+ * Allows availability hypertrack sdk listener.
+ *
+ *
+ * @param {function(string)} success - success callback.
+ * @param {function(error)} errror - error callback.
+ */
+sdkHandle.availabilityStateChange = function (success, error) {
+  console.log("HyperTrack:availabilityStateChange");
+  exec(success, error, "HyperTrackPlugin", "availabilityStateChange", []);
+};
+
+/**
+ * Stops availability hypertrack sdk listener.
+ *
+ *
+ * @param {function(string)} success - success callback.
+ * @param {function(error)} errror - error callback.
+ */
+sdkHandle.disposeAvailabilityState = function (success, error) {
+  console.log("HyperTrack:disposeAvailabilityState");
+  exec(success, error, "HyperTrackPlugin", "disposeAvailabilityState", []);
+};
 
 /* ------------ */
 /* Internal API */
@@ -210,23 +281,23 @@ sdkHandle.stop = function(success, error) {
  */
 var listeners = {};
 
-dispatchEvent = function(event) {
-	if (platform === "ios") {
-		var result = undefined;
-		var functions = listeners[event.type];
-		if (functions) {
-			for (var i = 0; i < functions.length; i++) {
-				result = functions[i](event);
-				if (typeof result != "undefined") {
-					if (!result) return result;
-				}
-			}
-		}
-		return result;
-	} else {
-		console.log("Not implemented on " + platform + ".");
-		return undefined;
-	}
+dispatchEvent = function (event) {
+  if (platform === "ios") {
+    var result = undefined;
+    var functions = listeners[event.type];
+    if (functions) {
+      for (var i = 0; i < functions.length; i++) {
+        result = functions[i](event);
+        if (typeof result != "undefined") {
+          if (!result) return result;
+        }
+      }
+    }
+    return result;
+  } else {
+    console.log("Not implemented on " + platform + ".");
+    return undefined;
+  }
 };
 
 /**
@@ -270,11 +341,11 @@ function onEventSubscribersChanged() {
   if (this.numHandlers === 1 && numberOfHandlers() === 1) {
     console.log("connecting event channel");
     exec(
-      function(info) {
+      function (info) {
         console.log("Received event", info);
         channels[info.eventType].fire(info.data);
       },
-      function() {
+      function () {
         console.log("Error while receiving event.");
       },
       "HyperTrackPlugin",
@@ -293,120 +364,130 @@ for (var key in channels) {
 }
 
 var hypertrack = {
-
-		/**
-		 * Subscribes listener for given event type.
-		 *
-		 * __Supported Platforms__
-		 *
-		 * -iOS
-		 * -Android
-		 */
-		addEventListener: function(type, listener) {
-		  if (platform === "ios") {
-		    var existing = listeners[type];
-		    if (!existing) {
-		      existing = [];
-		      listeners[type] = existing;
-		    }
-		    existing.push(listener);
-		  } else if (platform === "android") {
-		    if (type in channels) {
-		      channels[type].subscribe(listener);
-		    }
-		  } else {
-		    console.log("Not implemented on " + platform + ".");
-		  }
-		},
-
-		/**
-		 * Unsubscribes listener for given event type.
-		 *
-		 * __Supported Platforms__
-		 *
-		 * -iOS
-		 * -Android
-		 */
-		removeEventListener: function(type, listener) {
-		  if (platform === "ios") {
-		    var existing = listeners[type];
-		    if (existing) {
-		      var index;
-		      while ((index = existing.indexOf(listener)) != -1) {
-		        existing.splice(index, 1);
-		      }
-		    }
-		  } else if (platform === "android") {
-		    if (type in channels) {
-		      channels[type].unsubscribe(listener);
-		    }
-		  } else {
-		    console.log("Not implemented on " + platform + ".");
-		  }
-		},
-
-    /**
-     * Enable debug logging.
-     *
-     * @param {function()} success success callback
-     * @param {function(error)} error error callback
-     */
-    enableDebugLogging: function(success, error) {
-        console.log("HyperTrack:enableDebugLogging");
-        const success_cb = function() {
-            if (typeof(success) == 'function') { success(); }
-        }
-        const error_cb = function(err) {
-            if (typeof(error) == 'function') { error(err); }
-        }
-        exec(success_cb, error_cb, "HyperTrackPlugin", 'enableDebugLogging', []);
-    },
-
-	/**
-	 * Get the list of blockers that needs to be resolved for reliable tracking.
-	 * 
-	 * @param {Function} success success callback that retrieves a list of current blockers
-	 * @param {Function} error error callback
-	 */
-	getBlockers: function(success, error) {
-		console.log("HyperTrack:getBlockers");
-		const success_cb = function(blockers) {
-			console.log("Got blockers lists " + blockers);
-			blockers.forEach(blocker => 
-				blocker.resolve = function(success2, error2) {
-					console.log("Resolving blocker " + blocker.code);
-					exec(success2, error2, "HyperTrackPlugin", 'resolveBlocker', [blocker.code]);
-				}
-			);
-			if (typeof(success) == 'function') {success(blockers); }
-		}
-		exec(success_cb, error, "HyperTrackPlugin", "getBlockers", []);
-	},
-    /**
-     * Initialize SDK.
-     *
-     * @param {string} publishableKey - account specific key from dashboard. https://dahsboard.hypertrack.com/setup
-     * @param {function(sdkInstance)} success - success callaback that receives sdkInstance as an argument.
-     * @param {function(error)} errror - error callback
-     */
-    initialize: function(publishableKey, success, error) {
-        console.log("HyperTrack:Initializing with key " + publishableKey);
-        // wrap callbacks
-        const success_cb = function() {
-            console.debug("HyperTrack init success cb");
-
-            if (typeof(success) == 'function') {
-                success(sdkHandle);
-            }
-        };
-        const error_cb = function(err) {
-            console.error("HyperTrack inite error cb");
-            if (typeof(error) == 'function') {
-                error(err);
-            }
-        }
-        exec(success_cb, error_cb, "HyperTrackPlugin", 'initialize', [publishableKey]);
+  /**
+   * Subscribes listener for given event type.
+   *
+   * __Supported Platforms__
+   *
+   * -iOS
+   * -Android
+   */
+  addEventListener: function (type, listener) {
+    if (platform === "ios") {
+      var existing = listeners[type];
+      if (!existing) {
+        existing = [];
+        listeners[type] = existing;
+      }
+      existing.push(listener);
+    } else if (platform === "android") {
+      if (type in channels) {
+        channels[type].subscribe(listener);
+      }
+    } else {
+      console.log("Not implemented on " + platform + ".");
     }
-}
+  },
+
+  /**
+   * Unsubscribes listener for given event type.
+   *
+   * __Supported Platforms__
+   *
+   * -iOS
+   * -Android
+   */
+  removeEventListener: function (type, listener) {
+    if (platform === "ios") {
+      var existing = listeners[type];
+      if (existing) {
+        var index;
+        while ((index = existing.indexOf(listener)) != -1) {
+          existing.splice(index, 1);
+        }
+      }
+    } else if (platform === "android") {
+      if (type in channels) {
+        channels[type].unsubscribe(listener);
+      }
+    } else {
+      console.log("Not implemented on " + platform + ".");
+    }
+  },
+
+  /**
+   * Enable debug logging.
+   *
+   * @param {function()} success success callback
+   * @param {function(error)} error error callback
+   */
+  enableDebugLogging: function (success, error) {
+    console.log("HyperTrack:enableDebugLogging");
+    const success_cb = function () {
+      if (typeof success == "function") {
+        success();
+      }
+    };
+    const error_cb = function (err) {
+      if (typeof error == "function") {
+        error(err);
+      }
+    };
+    exec(success_cb, error_cb, "HyperTrackPlugin", "enableDebugLogging", []);
+  },
+
+  /**
+   * Get the list of blockers that needs to be resolved for reliable tracking.
+   *
+   * @param {Function} success success callback that retrieves a list of current blockers
+   * @param {Function} error error callback
+   */
+  getBlockers: function (success, error) {
+    console.log("HyperTrack:getBlockers");
+    const success_cb = function (blockers) {
+      console.log("Got blockers lists " + blockers);
+      blockers.forEach(
+        (blocker) =>
+          (blocker.resolve = function (success2, error2) {
+            console.log("Resolving blocker " + blocker.code);
+            exec(success2, error2, "HyperTrackPlugin", "resolveBlocker", [
+              blocker.code,
+            ]);
+          })
+      );
+      if (typeof success == "function") {
+        success(blockers);
+      }
+    };
+    exec(success_cb, error, "HyperTrackPlugin", "getBlockers", []);
+  },
+
+  /**
+   * Initialize SDK.
+   *
+   * @param {string} publishableKey - account specific key from dashboard. https://dahsboard.hypertrack.com/setup
+   * @param {function(sdkInstance)} success - success callaback that receives sdkInstance as an argument.
+   * @param {function(error)} errror - error callback
+   */
+  initialize: function (publishableKey, success, error) {
+    console.log("HyperTrack:Initializing with key " + publishableKey);
+    // wrap callbacks
+    const success_cb = function () {
+      console.debug("HyperTrack init success cb");
+      if (typeof success == "function") {
+        success(sdkHandle);
+      }
+    };
+    const error_cb = function (err) {
+      console.error("HyperTrack inite error cb");
+      if (typeof error == "function") {
+        error(err);
+      }
+    };
+    exec(success_cb, error_cb, "HyperTrackPlugin", "initialize", [
+      publishableKey,
+    ]);
+  },
+};
 
 module.exports = hypertrack;

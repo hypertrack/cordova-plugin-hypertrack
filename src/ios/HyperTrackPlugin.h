@@ -15,5 +15,12 @@
   - (void)setDeviceMetadata:(CDVInvokedUrlCommand *)command;
   - (void)setDeviceName:(CDVInvokedUrlCommand *)command;
   - (void)enableDebugLogging:(CDVInvokedUrlCommand *)command;
-
+  - (void)trackingStateChange:(CDVInvokedUrlCommand *)command;
+  - (void)disposeTrackingState:(CDVInvokedUrlCommand *)command;
+  - (void)availabilityStateChange:(CDVInvokedUrlCommand *)command;
+  - (void)disposeAvailabilityState:(CDVInvokedUrlCommand *)command;
+  - (void)setAvailability:(CDVInvokedUrlCommand *)command;
+  - (void)getAvailability:(CDVInvokedUrlCommand *)command;
+  - (void)isTracking:(CDVInvokedUrlCommand *)command;
+  
 @end

@@ -14,12 +14,24 @@
 
 @implementation HyperTrackPlugin
 
-- (void)pluginInitialize {
-  [self startEventDispatching];
+- (void)trackingStateChange: (CDVInvokedUrlCommand *)command{
+  [self startTrackingEventDispatching];
+  [self.commandDelegate sendPluginResult:nil callbackId:command.callbackId];
 }
 
-- (void)onAppTerminate {
-  [self stopEventDispatching];
+- (void)disposeTrackingState:(CDVInvokedUrlCommand *)command {
+  [self stopTrackingEventDispatching];
+  [self.commandDelegate sendPluginResult:nil callbackId:command.callbackId];
+}
+
+- (void)availabilityStateChange:(CDVInvokedUrlCommand *)command {
+  [self startAvailabilityEventDispatching];
+  [self.commandDelegate sendPluginResult:nil callbackId:command.callbackId];
+}
+
+- (void)disposeAvailabilityState:(CDVInvokedUrlCommand *)command {
+  [self stopAvailabilityEventDispatching];
+  [self.commandDelegate sendPluginResult:nil callbackId:command.callbackId];
 }
 
 - (void)initialize:(CDVInvokedUrlCommand *)command {
@@ -66,6 +78,47 @@
 
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
+
+- (void)setAvailability:(CDVInvokedUrlCommand *)command {
+
+  CDVPluginResult* pluginResult = nil;
+  NSString* available = [command.arguments objectAtIndex:0];
+
+  if (self.htResult.hyperTrack != NULL) {
+    if (available != NULL) {
+      [self.htResult.hyperTrack setAvailability:(available.boolValue ? HTAvailabilityAvailable : HTAvailabilityUnavailable)];
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    } else {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Param can't be NULL."];
+    }
+  } else if (self.htResult.error != NULL) {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: self.htResult.error.description];
+  } else {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+  }
+
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)getAvailability:(CDVInvokedUrlCommand *)command {
+
+  CDVPluginResult* pluginResult = nil;
+
+  if (self.htResult.hyperTrack != NULL) {
+  if([self.htResult.hyperTrack availability] == HTAvailabilityAvailable) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"available"];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"unavailable"];
+    }
+  } else if (self.htResult.error != NULL) {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: self.htResult.error.description];
+  } else {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+  }
+
+  [self.commandDelegate sendPluginResult: pluginResult callbackId:command.callbackId];
+}
+
 
 - (void)setDeviceMetadata:(CDVInvokedUrlCommand *)command {
 
@@ -238,16 +291,30 @@
   [self.commandDelegate sendPluginResult: pluginResult callbackId:command.callbackId];
 }
 
+- (void)isTracking:(CDVInvokedUrlCommand *)command {
+
+  CDVPluginResult* pluginResult = nil;
+
+  if (self.htResult.hyperTrack != NULL) {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:[self.htResult.hyperTrack isTracking] ? 1 : 0 ];
+  } else if (self.htResult.error != NULL) {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: self.htResult.error.description];
+  } else {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+  }
+
+  [self.commandDelegate sendPluginResult: pluginResult callbackId:command.callbackId];
+}
+
 #pragma mark NSNotification
 
-- (void)startEventDispatching {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+- (void)startTrackingEventDispatching {
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(sendTrackingStateToRNWith:)
+                                           selector:@selector(sendTrackingStartState)
                                                name:HTSDK.startedTrackingNotification
                                              object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(sendTrackingStateToRNWith:)
+                                           selector:@selector(sendTrackingStopState)
                                                name:HTSDK.stoppedTrackingNotification
                                              object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -260,24 +327,58 @@
                                              object:nil];
 }
 
-- (void)stopEventDispatching {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+- (void)stopTrackingEventDispatching {
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.startedTrackingNotification
+                                        object:nil ];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.stoppedTrackingNotification
+                                        object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.didEncounterRestorableErrorNotification
+                                        object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.didEncounterUnrestorableErrorNotification
+                                        object:nil];
 }
 
 - (void)updateStatus:(id)info {
   [self sendEventWithJSON:info];
 }
 
-- (void)sendTrackingStateToRNWith:(NSNotification*)notification {
-  NSString *data = @"";
-  if ([notification.name isEqualToString: @"HyperTrackStartedTracking"]) {
-    data = @"start";
-  } else if ([notification.name isEqualToString: @"HyperTrackStoppedTracking"]) {
-    data = @"stop";
-  } else {
-    return;
-  }
-  [self updateStatus: @{@"type": @"onHyperTrackStatusChanged", @"data": data}];
+- (void)sendTrackingStartState {
+  [self updateStatus: @{@"type": @"onHyperTrackTrackingStatusChanged", @"data": @"start"}];
+}
+
+- (void)sendTrackingStopState {
+  [self updateStatus: @{@"type": @"onHyperTrackTrackingStatusChanged", @"data": @"stop"}];
+}
+
+- (void)startAvailabilityEventDispatching {
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(sendAvailableState)
+                                               name:HTSDK.becameAvailableNotification
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(sendUnavailableState)
+                                               name:HTSDK.becameUnavailableNotification
+                                             object:nil];}
+
+- (void)stopAvailabilityEventDispatching {
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.becameAvailableNotification
+                                        object:nil ];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.becameUnavailableNotification
+                                        object:nil];
+}
+
+- (void)sendAvailableState {
+  [self updateStatus: @{@"type": @"onHyperTrackAvailabilityStatusChanged", @"data": @"available"}];
+}
+
+- (void)sendUnavailableState {
+  [self updateStatus: @{@"type": @"onHyperTrackAvailabilityStatusChanged", @"data": @"unavailable"}];
 }
 
 - (void)sendCriticalErrorToRNWith:(NSNotification*)notification {

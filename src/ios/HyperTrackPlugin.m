@@ -9,28 +9,75 @@
 
 @property(strong, nonatomic, nullable) HTResult *htResult;
 @property(strong, nonatomic, nullable) CDVInvokedUrlCommand *statusUpdateCallback;
-
+@property (strong, nonatomic, nullable) NSString *trackingStateCallbackId;
+@property (strong, nonatomic, nullable) NSString *availabilityStateCallbackId;
 @end
 
 @implementation HyperTrackPlugin
 
 - (void)trackingStateChange: (CDVInvokedUrlCommand *)command{
-  [self startTrackingEventDispatching];
-  [self.commandDelegate sendPluginResult:nil callbackId:command.callbackId];
+
+  self.trackingStateCallbackId = command.callbackId;
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                          selector:@selector(sendTrackingStartState)
+                                              name:HTSDK.startedTrackingNotification
+                                            object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                          selector:@selector(sendTrackingStopState)
+                                              name:HTSDK.stoppedTrackingNotification
+                                            object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                          selector:@selector(sendCriticalErrorToRNWith:)
+                                              name:HTSDK.didEncounterRestorableErrorNotification
+                                            object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                          selector:@selector(sendCriticalErrorToRNWith:)
+                                              name:HTSDK.didEncounterUnrestorableErrorNotification
+                                            object:nil];
 }
 
 - (void)disposeTrackingState:(CDVInvokedUrlCommand *)command {
-  [self stopTrackingEventDispatching];
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.startedTrackingNotification
+                                        object:nil ];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.stoppedTrackingNotification
+                                        object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.didEncounterRestorableErrorNotification
+                                        object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.didEncounterUnrestorableErrorNotification
+                                        object:nil];
+
   [self.commandDelegate sendPluginResult:nil callbackId:command.callbackId];
 }
 
 - (void)availabilityStateChange:(CDVInvokedUrlCommand *)command {
-  [self startAvailabilityEventDispatching];
-  [self.commandDelegate sendPluginResult:nil callbackId:command.callbackId];
+
+  self.availabilityStateCallbackId = command.callbackId;
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                        selector:@selector(sendAvailableState)
+                                        name:HTSDK.becameAvailableNotification
+                                        object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                        selector:@selector(sendUnavailableState)
+                                        name:HTSDK.becameUnavailableNotification
+                                        object:nil];
 }
 
 - (void)disposeAvailabilityState:(CDVInvokedUrlCommand *)command {
-  [self stopAvailabilityEventDispatching];
+  
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.becameAvailableNotification
+                                        object:nil ];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                        name:HTSDK.becameUnavailableNotification
+                                        object:nil];
+                                        
   [self.commandDelegate sendPluginResult:nil callbackId:command.callbackId];
 }
 
@@ -306,124 +353,44 @@
   [self.commandDelegate sendPluginResult: pluginResult callbackId:command.callbackId];
 }
 
-#pragma mark NSNotification
-
-- (void)startTrackingEventDispatching {
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(sendTrackingStartState)
-                                               name:HTSDK.startedTrackingNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(sendTrackingStopState)
-                                               name:HTSDK.stoppedTrackingNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(sendCriticalErrorToRNWith:)
-                                               name:HTSDK.didEncounterRestorableErrorNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(sendCriticalErrorToRNWith:)
-                                               name:HTSDK.didEncounterUnrestorableErrorNotification
-                                             object:nil];
-}
-
-- (void)stopTrackingEventDispatching {
-  [[NSNotificationCenter defaultCenter] removeObserver:self
-                                        name:HTSDK.startedTrackingNotification
-                                        object:nil ];
-  [[NSNotificationCenter defaultCenter] removeObserver:self
-                                        name:HTSDK.stoppedTrackingNotification
-                                        object:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:self
-                                        name:HTSDK.didEncounterRestorableErrorNotification
-                                        object:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:self
-                                        name:HTSDK.didEncounterUnrestorableErrorNotification
-                                        object:nil];
-}
-
-- (void)updateStatus:(id)info {
-  [self sendEventWithJSON:info];
-}
-
 - (void)sendTrackingStartState {
-  [self updateStatus: @{@"type": @"onHyperTrackTrackingStatusChanged", @"data": @"start"}];
+
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"start"];
+  [pluginResult setKeepCallbackAsBool:YES];
+    
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.trackingStateCallbackId];
 }
 
 - (void)sendTrackingStopState {
-  [self updateStatus: @{@"type": @"onHyperTrackTrackingStatusChanged", @"data": @"stop"}];
-}
 
-- (void)startAvailabilityEventDispatching {
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(sendAvailableState)
-                                               name:HTSDK.becameAvailableNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(sendUnavailableState)
-                                               name:HTSDK.becameUnavailableNotification
-                                             object:nil];}
-
-- (void)stopAvailabilityEventDispatching {
-  [[NSNotificationCenter defaultCenter] removeObserver:self
-                                        name:HTSDK.becameAvailableNotification
-                                        object:nil ];
-  [[NSNotificationCenter defaultCenter] removeObserver:self
-                                        name:HTSDK.becameUnavailableNotification
-                                        object:nil];
-}
-
-- (void)sendAvailableState {
-  [self updateStatus: @{@"type": @"onHyperTrackAvailabilityStatusChanged", @"data": @"available"}];
-}
-
-- (void)sendUnavailableState {
-  [self updateStatus: @{@"type": @"onHyperTrackAvailabilityStatusChanged", @"data": @"unavailable"}];
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"stop"];
+  [pluginResult setKeepCallbackAsBool:YES];
+    
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.trackingStateCallbackId];
 }
 
 - (void)sendCriticalErrorToRNWith:(NSNotification*)notification {
-  [self updateStatus: @{@"type": @"onHyperTrackError", @"data": [notification hyperTrackTrackingError].description}];
+
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[notification hyperTrackTrackingError].description];
+  [pluginResult setKeepCallbackAsBool:YES];
+    
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.trackingStateCallbackId];
 }
 
-- (BOOL)sendEventWithJSON:(id)JSON {
-    if ([JSON isKindOfClass:[NSDictionary class]]) {
-        JSON = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:JSON options:0 error:NULL] encoding:NSUTF8StringEncoding];
-    }
-    NSString *script = [NSString stringWithFormat:@"dispatchEvent(%@)", JSON];
-    NSString *result = [self stringByEvaluatingJavaScriptFromString:script];
-    return [result length]? [result boolValue]: YES;
+- (void)sendAvailableState {
+
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"available"];
+  [pluginResult setKeepCallbackAsBool:YES];
+    
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.availabilityStateCallbackId];
 }
 
-void runOnMainQueueWithoutDeadlocking(void (^block)(void)) {
-    if ([NSThread isMainThread]) {
-        block();
-    } else {
-        dispatch_sync(dispatch_get_main_queue(), block);
-    }
-}
+- (void)sendUnavailableState {
 
-- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script {
-    __block NSString *result;
-#if WK_WEB_VIEW_ONLY
-    if ([self.webView isKindOfClass:WKWebView.class]) {
-        runOnMainQueueWithoutDeadlocking(^{
-            [((WKWebView *)self.webView) evaluateJavaScript:script completionHandler:^(id resultID, NSError *error) {
-                result = [resultID description];
-            }];
-        });
-    }
-#else
-    if ([self.webView isKindOfClass:UIWebView.class]) {
-        result = [(UIWebView *)self.webView stringByEvaluatingJavaScriptFromString:script];
-    } else if ([self.webView isKindOfClass:WKWebView.class]) {
-        runOnMainQueueWithoutDeadlocking(^{
-            [((WKWebView *)self.webView) evaluateJavaScript:script completionHandler:^(id resultID, NSError *error) {
-                result = [resultID description];
-            }];
-        });
-    }
-#endif
-    return result;
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"unavailable"];
+  [pluginResult setKeepCallbackAsBool:YES];
+  
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.availabilityStateCallbackId];
 }
 
 @end

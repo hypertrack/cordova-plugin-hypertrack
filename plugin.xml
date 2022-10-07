@@ -58,7 +58,7 @@
         <source url="https://cdn.cocoapods.org/" />
       </config>
       <pods use-frameworks="true">
-        <pod name="HyperTrack/Objective-C" version="4.12.3"/>
+        <pod name="HyperTrack/Objective-C" version="4.12.4"/>
       </pods>
     </podspec>
 

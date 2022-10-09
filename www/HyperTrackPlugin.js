@@ -227,7 +227,19 @@ sdkHandle.stop = function (success, error) {
  */
 sdkHandle.trackingStateChange = function (success, error) {
   console.log("HyperTrack:trackingStateChange");
-  exec(success, error, "HyperTrackPlugin", "trackingStateChange", []);
+  const success_cb = function (val) {
+    if (typeof success == "function") {
+      if (val) {
+        success(val);
+      }
+    }
+  };
+  const error_cb = function (err) {
+    if (typeof error == "function") {
+      error(err);
+    }
+  };
+  exec(success_cb, error_cb, "HyperTrackPlugin", "trackingStateChange", []);
 };
 
 /**
@@ -251,7 +263,19 @@ sdkHandle.disposeTrackingState = function (success, error) {
  */
 sdkHandle.availabilityStateChange = function (success, error) {
   console.log("HyperTrack:availabilityStateChange");
-  exec(success, error, "HyperTrackPlugin", "availabilityStateChange", []);
+  const success_cb = function (val) {
+    if (typeof success == "function") {
+      if (val) {
+        success(val);
+      }
+    }
+  };
+  const error_cb = function (err) {
+    if (typeof error == "function") {
+      error(err);
+    }
+  };
+  exec(success_cb, error_cb, "HyperTrackPlugin", "availabilityStateChange", []);
 };
 
 /**
@@ -266,155 +290,7 @@ sdkHandle.disposeAvailabilityState = function (success, error) {
   exec(success, error, "HyperTrackPlugin", "disposeAvailabilityState", []);
 };
 
-/* ------------ */
-/* Internal API */
-/* ------------ */
-
-// Event listeners
-
-/**
- * Event listeners collection.
- *
- * __Supported Platforms__
- *
- * -iOS
- */
-var listeners = {};
-
-dispatchEvent = function (event) {
-  if (platform === "ios") {
-    var result = undefined;
-    var functions = listeners[event.type];
-    if (functions) {
-      for (var i = 0; i < functions.length; i++) {
-        result = functions[i](event);
-        if (typeof result != "undefined") {
-          if (!result) return result;
-        }
-      }
-    }
-    return result;
-  } else {
-    console.log("Not implemented on " + platform + ".");
-    return undefined;
-  }
-};
-
-/**
- * Event channels.
- *
- * __Supported Platforms__
- *
- * -Android
- */
-var channel = require("cordova/channel");
-
-var channels = {
-  onHyperTrackStatusChanged: channel.create("onHyperTrackStatusChanged"),
-  onHyperTrackError: channel.create("onHyperTrackError")
-};
-
-/**
- * Retrieves total number of handlers for all available channels.
- *
- * __Supported Platforms__
- *
- * -Android
- */
-function numberOfHandlers() {
-  return (
-    channels.onHyperTrackStatusChanged.numHandlers +
-    channels.onHyperTrackError.numHandlers
-  );
-}
-
-/**
- * Notifies about any changes to collection of event handlers.
- *
- * __Supported Platforms__
- *
- * -Android
- */
-function onEventSubscribersChanged() {
-  console.log("event subscribers changed");
-  // If we just registered the first handler, make sure native listener is started.
-  if (this.numHandlers === 1 && numberOfHandlers() === 1) {
-    console.log("connecting event channel");
-    exec(
-      function (info) {
-        console.log("Received event", info);
-        channels[info.eventType].fire(info.data);
-      },
-      function () {
-        console.log("Error while receiving event.");
-      },
-      "HyperTrackPlugin",
-      "subscribe",
-      []
-    );
-  } else if (numberOfHandlers() === 0) {
-    console.log("disconnecting event channel");
-    exec(null, null, "HyperTrackPlugin", "unsubscribe", []);
-  }
-}
-
-for (var key in channels) {
-  console.log("subscriber listener for " + key);
-  channels[key].onHasSubscribersChange = onEventSubscribersChanged;
-}
-
 var hypertrack = {
-  /**
-   * Subscribes listener for given event type.
-   *
-   * __Supported Platforms__
-   *
-   * -iOS
-   * -Android
-   */
-  addEventListener: function (type, listener) {
-    if (platform === "ios") {
-      var existing = listeners[type];
-      if (!existing) {
-        existing = [];
-        listeners[type] = existing;
-      }
-      existing.push(listener);
-    } else if (platform === "android") {
-      if (type in channels) {
-        channels[type].subscribe(listener);
-      }
-    } else {
-      console.log("Not implemented on " + platform + ".");
-    }
-  },
-
-  /**
-   * Unsubscribes listener for given event type.
-   *
-   * __Supported Platforms__
-   *
-   * -iOS
-   * -Android
-   */
-  removeEventListener: function (type, listener) {
-    if (platform === "ios") {
-      var existing = listeners[type];
-      if (existing) {
-        var index;
-        while ((index = existing.indexOf(listener)) != -1) {
-          existing.splice(index, 1);
-        }
-      }
-    } else if (platform === "android") {
-      if (type in channels) {
-        channels[type].unsubscribe(listener);
-      }
-    } else {
-      console.log("Not implemented on " + platform + ".");
-    }
-  },
-
   /**
    * Enable debug logging.
    *

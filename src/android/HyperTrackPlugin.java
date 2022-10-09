@@ -161,9 +161,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
                 case "disposeTrackingState":
                     throwIfNotInitialized();
                     disposeTrackingStateChannel();
-                    PluginResult unsubscribeResult = new PluginResult(PluginResult.Status.NO_RESULT);
-                    unsubscribeResult.setKeepCallback(true);
-                    callbackContext.sendPluginResult(unsubscribeResult);
+                    callbackContext.success();
                     return true;
                 case "availabilityStateChange":
                     throwIfNotInitialized();
@@ -175,9 +173,7 @@ public class HyperTrackPlugin extends CordovaPlugin implements TrackingStateObse
                 case "disposeAvailabilityState":
                     throwIfNotInitialized();
                     disposeAvailabilityStateChannel();
-                    PluginResult unsubscribeRes = new PluginResult(PluginResult.Status.NO_RESULT);
-                    unsubscribeRes.setKeepCallback(true);
-                    callbackContext.sendPluginResult(unsubscribeRes);
+                    callbackContext.success();
                     return true;
                 default:
                     callbackContext.error("Method not found");

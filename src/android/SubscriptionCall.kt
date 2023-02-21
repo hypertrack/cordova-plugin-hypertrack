@@ -11,5 +11,5 @@ enum class SubscriptionCall {
     subscribeToAvailability,
     unsubscribeFromAvailability,
     subscribeToErrors,
-    unsubscribeFromErrors,
+    unsubscribeFromErrors
 }

@@ -20,9 +20,16 @@
         - version
 
 3. Update CHANGELOG
-4. Update README badge
-5. Create a version tag
-6. Commit and push
-7. Create a release
-    - Release title - version
-8. npm publish
+   
+4. Update the README badge
+
+5. Do the release dry run with `just release` and verify that the release is correct (checklist is in the command output)
+   
+6. Commit and merge to master
+
+7. Create and push a new version tag
+
+8. Create a Github repo release
+   - Release title should be the current version tag
+
+9. Run `npm publish` to publish the package to npm

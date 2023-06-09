@@ -80,7 +80,7 @@
         <source url="https://cdn.cocoapods.org/" />
       </config>
       <pods use-frameworks="true">
-        <pod name="HyperTrack" spec="4.14.0"/>
+        <pod name="HyperTrack" spec="4.16.0"/>
       </pods>
     </podspec>
 

@@ -1,20 +1,19 @@
 package com.hypertrack.sdk.cordova.plugin
 
-import android.util.Log
 import com.hypertrack.sdk.*
 import com.hypertrack.sdk.cordova.plugin.common.*
-import com.hypertrack.sdk.cordova.plugin.common.HyperTrackSdkWrapper.initializeSdk
+
 import com.hypertrack.sdk.cordova.plugin.common.Result
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsAvailable
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsTracking
+import java.util.*
 import org.apache.cordova.CallbackContext
 import org.apache.cordova.CordovaPlugin
 import org.apache.cordova.PluginResult
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.*
 
-class HyperTrackCordovaPlugin: CordovaPlugin() {
+class HyperTrackCordovaPlugin : CordovaPlugin() {
 
     private var isTrackingEventStream: CallbackContext? = null
     private var isAvailableEventStream: CallbackContext? = null
@@ -33,7 +32,7 @@ class HyperTrackCordovaPlugin: CordovaPlugin() {
         argsJson: JSONArray,
         callbackContext: CallbackContext
     ): Result<*> {
-        return when(val method = SdkMethod.values().firstOrNull { it.name == methodName }) {
+        return when (val method = SdkMethod.values().firstOrNull { it.name == methodName }) {
             SdkMethod.initialize -> {
                 withArgs<Map<String, Any?>, Unit>(argsJson) { args ->
                     HyperTrackSdkWrapper.initializeSdk(args).mapSuccess {
@@ -83,7 +82,7 @@ class HyperTrackCordovaPlugin: CordovaPlugin() {
                 HyperTrackSdkWrapper.sync()
             }
             else -> {
-                when(
+                when (
                     SubscriptionCall.values().firstOrNull {
                         it.name == methodName
                     }
@@ -91,7 +90,7 @@ class HyperTrackCordovaPlugin: CordovaPlugin() {
                     SubscriptionCall.subscribeToTracking -> {
                         isTrackingEventStream?.let { disposeCallback(it) }
                         isTrackingEventStream = callbackContext
-                        HyperTrackSdkWrapper.isTracking().mapSuccess { 
+                        HyperTrackSdkWrapper.isTracking().mapSuccess {
                             sendEvent(callbackContext, it)
                             NoCallback
                         }
@@ -99,7 +98,7 @@ class HyperTrackCordovaPlugin: CordovaPlugin() {
                     SubscriptionCall.subscribeToAvailability -> {
                         isAvailableEventStream?.let { disposeCallback(it) }
                         isAvailableEventStream = callbackContext
-                        HyperTrackSdkWrapper.isAvailable().mapSuccess { 
+                        HyperTrackSdkWrapper.isAvailable().mapSuccess {
                             sendEvent(callbackContext, it)
                             NoCallback
                         }
@@ -129,7 +128,7 @@ class HyperTrackCordovaPlugin: CordovaPlugin() {
             }
         }
     }
-    
+
     private fun sendEvent(callbackContext: CallbackContext, data: Any) {
         try {
             when (data) {
@@ -164,8 +163,11 @@ class HyperTrackCordovaPlugin: CordovaPlugin() {
         callbackContext.sendPluginResult(result)
     }
 
-    private inline fun <reified T, N> withArgs(args: JSONArray, crossinline sdkMethodCall: (T) -> Result<N>): Result<N> {
-        return when(T::class) {
+    private inline fun <reified T, N> withArgs(
+        args: JSONArray,
+        crossinline sdkMethodCall: (T) -> Result<N>
+    ): Result<N> {
+        return when (T::class) {
             Map::class -> {
                 try {
                     Success(args.getJSONObject(0))
@@ -232,9 +234,9 @@ class HyperTrackCordovaPlugin: CordovaPlugin() {
 }
 
 private fun <S> Result<S>.sendAsCallbackResult(callbackContext: CallbackContext): Boolean {
-    return when(this) {
+    return when (this) {
         is Success -> {
-            when(val success = this.success) {
+            when (val success = this.success) {
                 is Map<*, *> -> {
                     callbackContext.success(JSONObject(success))
                     true
@@ -251,7 +253,9 @@ private fun <S> Result<S>.sendAsCallbackResult(callbackContext: CallbackContext)
                     true
                 }
                 else -> {
-                    callbackContext.failure(IllegalArgumentException("Invalid response ${this.success}"))
+                    callbackContext.failure(
+                        IllegalArgumentException("Invalid response ${this.success}")
+                    )
                     false
                 }
             }
@@ -265,7 +269,7 @@ private fun <S> Result<S>.sendAsCallbackResult(callbackContext: CallbackContext)
 
 private fun JSONObject.toMap(): Map<String, Any?> {
     return keys().asSequence().associateWith { key ->
-        when(val value = this.get(key)) {
+        when (val value = this.get(key)) {
             is Boolean,
             is String,
             is Double,

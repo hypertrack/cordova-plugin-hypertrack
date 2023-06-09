@@ -2,7 +2,7 @@
 
 ![GitHub](https://img.shields.io/github/license/hypertrack/cordova-plugin-hypertrack.svg)
 ![npm](https://img.shields.io/npm/v/cordova-plugin-hypertrack-v3.svg)
-[![iOS SDK](https://img.shields.io/badge/iOS%20SDK-4.14.0-brightgreen.svg)](https://cocoapods.org/pods/HyperTrack)
+[![iOS SDK](https://img.shields.io/badge/iOS%20SDK-4.16.0-brightgreen.svg)](https://cocoapods.org/pods/HyperTrack)
 ![Android SDK](https://img.shields.io/badge/Android%20SDK-6.4.0-brightgreen.svg)
 
 [HyperTrack](https://www.hypertrack.com/) lets you add live location tracking to your mobile app. Live location is made available along with ongoing activity, tracking controls and tracking outage with reasons. 

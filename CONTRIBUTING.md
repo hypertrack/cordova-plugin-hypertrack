@@ -6,22 +6,22 @@
 
 1. Update SDK version constant
     - Android 
-        - src/android/HypertrackPlugin.gradle
+        - [src/android/HypertrackPlugin.gradle](src/android/HypertrackPlugin.gradle)
             - HYPERTRACK_SDK_VERSION
     - iOS
-        - plugin.xml
+        - [plugin.xml](plugin.xml)
             - `<platform name="ios">`
                 - `<pod name="HyperTrack" version="**version**"/>`
 
 2. Update wrapper version
-    - package.json
+    - [package.json](package.json)
         - version
-    - plugin.xml
+    - [plugin.xml](plugin.xml)
         - version
 
-3. Update CHANGELOG
+3. Update [CHANGELOG](CHANGELOG.md)
    
-4. Update the README badge
+4. Update the [README](README.md) badge
 
 5. Do the release dry run with `just release` and verify that the release is correct (checklist is in the command output)
    

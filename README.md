@@ -25,7 +25,7 @@ cordova plugin add cordova-plugin-hypertrack-v3
 
 ## Wrapper API Documentation
 
-[Wrapper API Documentation](https://hypertrack.github.io/cordova-plugin-hypertrack/)
+[Wrapper API Documentation](API-DOCUMENTATION.md)
 
 ## Contributing
 

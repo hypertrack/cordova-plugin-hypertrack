@@ -23,8 +23,10 @@ const HyperTrack = (function () {
         exec(onSuccess, onError, pluginName, "initialize", [
           {
             publishableKey,
-            loggingEnabled: sdkInitParams.loggingEnabled ?? false,
             allowMockLocations: sdkInitParams.allowMockLocations ?? false,
+            automaticallyRequestPermissions:
+              sdkInitParams.automaticallyRequestPermissions ?? false,
+            loggingEnabled: sdkInitParams.loggingEnabled ?? false,
             requireBackgroundTrackingPermission:
               sdkInitParams.requireBackgroundTrackingPermission ?? false,
           },

@@ -64,6 +64,7 @@
 		<source-file src="src/ios/common/SDKInitParams.swift" target-dir="common"/>
 		<source-file src="src/ios/common/SDKMethod.swift" target-dir="common"/>
 		<source-file src="src/ios/common/Serialization.swift" target-dir="common"/>
+		<source-file src="src/ios/common/GeotagData.swift" target-dir="common"/>
 		<source-file src="src/ios/common/DictionaryDecoder.swift" target-dir="common"/>
 		<source-file src="src/ios/HyperTrackCordovaPlugin.swift" target-dir="common"/>
 		<source-file src="src/ios/MethodWrapper.swift" target-dir="common"/>

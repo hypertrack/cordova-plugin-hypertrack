@@ -11,8 +11,9 @@ Static. Initializes the SDK
 let hyperTrack = await HyperTrack.initialize(
     'YourPublishableKey',
     {
-        loggingEnabled: false,
+        automaticallyRequestPermissions: false, 
         allowMockLocations: false,
+        loggingEnabled: false,
         requireBackgroundTrackingPermission: false,
     }
 )
@@ -210,16 +211,22 @@ hyperTrack.sync()
 ```javascript
 {
     /**
-     * Enable debug logging. 
+     * Automatically request location permissions on iOS. 
      * Default: false
      */
-    loggingEnabled: Boolean,
-    
+    automaticallyRequestPermissions: Boolean,
+
     /**
      * Allow mock locations to pass through and don’t send mock location outage. 
      * Default: false
      */
     allowMockLocations: Boolean,
+
+    /**
+     * Enable debug logging. 
+     * Default: false
+     */
+    loggingEnabled: Boolean,
 
     /**
      * Require Background location permissions while requiring permissions on Android.

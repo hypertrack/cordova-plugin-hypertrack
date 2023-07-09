@@ -1,51 +1,80 @@
+let deserializeHyperTrackErrors = function (response) {
+  const result = [];
+  for (let i = 0; i < response.length; i++) {
+    result.push(response[i].value);
+  }
+  return result;
+};
+
+let deserializeLocationErrorErrors = function (response) {
+  const deserialized = JSON.parse(JSON.stringify(response));
+  deserialized.value.value = deserializeHyperTrackErrors(
+    deserialized.value.value
+  );
+  return deserialized;
+};
+
 module.exports = {
-    deserializeLocationResult: function(response) {
-        if(response.type == "failure" && response.value.type == "errors") {
-            const deserialized = JSON.parse(JSON.stringify(response))
-            deserialized.value.value = this.deserializeHyperTrackErrors(deserialized.value.value)
-            return deserialized
-        } else {
-            return response
-        }
-    },
+  deserializeLocationErrorErrors: deserializeLocationErrorErrors,
 
-    deserializeHyperTrackErrors: function(response) {
-        const result = []
-        for (let i = 0; i < response.length; i++) {
-            result.push(response[i].value)
-        } 
-        return result
-    },
+  deserializeLocationResult: function (response) {
+    if (response.type == "failure" && response.value.type == "errors") {
+      return deserializeLocationErrorErrors(response);
+    } else {
+      return response;
+    }
+  },
 
-    deserializeDeviceId: function(response) {
-        return response.value
-    },
+  deserializeLocationWithDeviationResult: function (response) {
+    if (response.type == "failure" && response.value.type == "errors") {
+      return deserializeLocationErrorErrors(response);
+    } else {
+      return response;
+    }
+  },
 
-    deserializeIsAvailable: function(response) {
-        return response.value
-    },
+  deserializeHyperTrackErrors: deserializeHyperTrackErrors,
 
-    deserializeIsTracking: function(response) {
-        return response.value
-    },
+  deserializeDeviceId: function (response) {
+    return response.value;
+  },
 
-    serializeIsAvailable: function(value) {
-        return {
-            type: "isAvailable",
-            value: value
-        }
-    },
+  deserializeIsAvailable: function (response) {
+    return response.value;
+  },
 
-    serializeDeviceName: function(value) {
-        return {
-            type: "deviceName",
-            value: value
-        }
-    },
+  deserializeIsTracking: function (response) {
+    return response.value;
+  },
 
-    serializeGeotag: function(data) {
-        return {
-            data: data,
-        }
-    },
+  serializeLocation(location) {
+    return {
+      type: "location",
+      value: {
+        latitude: location.latitude,
+        longitude: location.longitude,
+      },
+    };
+  },
+
+  serializeIsAvailable: function (value) {
+    return {
+      type: "isAvailable",
+      value: value,
+    };
+  },
+
+  serializeDeviceName: function (value) {
+    return {
+      type: "deviceName",
+      value: value,
+    };
+  },
+
+  serializeGeotag: function (data, expectedLocation) {
+    return {
+      data: data,
+      expectedLocation: expectedLocation,
+    };
+  },
 };

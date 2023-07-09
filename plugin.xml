@@ -33,7 +33,7 @@
     <source-file src="src/android/HyperTrackCordovaPlugin.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin" />
     <source-file src="src/android/NoCallback.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin" />
     <source-file src="src/android/SubscriptionCall.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin" />
-    <source-file src="src/android/common/Geotag.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
+    <source-file src="src/android/common/GeotagData.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
     <source-file src="src/android/common/HyperTrackError.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
     <source-file src="src/android/common/HyperTrackSdkWrapper.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
     <source-file src="src/android/common/LocationError.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
@@ -64,6 +64,7 @@
 		<source-file src="src/ios/common/SDKInitParams.swift" target-dir="common"/>
 		<source-file src="src/ios/common/SDKMethod.swift" target-dir="common"/>
 		<source-file src="src/ios/common/Serialization.swift" target-dir="common"/>
+		<source-file src="src/ios/common/GeotagData.swift" target-dir="common"/>
 		<source-file src="src/ios/common/DictionaryDecoder.swift" target-dir="common"/>
 		<source-file src="src/ios/HyperTrackCordovaPlugin.swift" target-dir="common"/>
 		<source-file src="src/ios/MethodWrapper.swift" target-dir="common"/>

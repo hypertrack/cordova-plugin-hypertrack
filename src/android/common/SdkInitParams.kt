@@ -9,7 +9,7 @@ internal data class SdkInitParams(
     val publishableKey: String,
     val requireBackgroundTrackingPermission: Boolean,
     val loggingEnabled: Boolean,
-    val allowMockLocations: Boolean
+    val allowMockLocations: Boolean,
 ) {
 
     companion object {
@@ -27,7 +27,7 @@ internal data class SdkInitParams(
                         .getOrThrow(),
                     allowMockLocations = it
                         .get<Boolean>(KEY_ALLOW_MOCK_LOCATIONS)
-                        .getOrThrow()
+                        .getOrThrow(),
                 )
             }
         }

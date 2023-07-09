@@ -1,36 +1,39 @@
 const exec = require("cordova/exec");
 
-const pluginName = "HyperTrackCordovaPlugin"
+const pluginName = "HyperTrackCordovaPlugin";
 
 const HyperTrack = (function () {
   const staticMethods = {
     /**
      * Creates an SDK instance.
-     * 
-     * @param {string} publishableKey 
+     *
+     * @param {string} publishableKey
      * @param {Object} sdkInitParams { loggingEnabled?: boolean; allowMockLocations?: boolean; requireBackgroundTrackingPermission?: boolean; }
      * @returns HyperTrack instance
      */
     initialize: async function (publishableKey, sdkInitParams = {}) {
-      return new Promise(function (resolve, reject) {
+      return new Promise(function (resolve, _reject) {
         const onSuccess = function () {
-          resolve(pluginHandle)
+          resolve(pluginHandle);
         };
         const onError = function (err) {
-          console.log(`HyperTrack init error ${err}`);
-          throw Error(err)
+          console.log(`HyperTrack init error: ${err}`);
+          throw Error(err);
         };
         exec(onSuccess, onError, pluginName, "initialize", [
           {
             publishableKey,
-            loggingEnabled: sdkInitParams.loggingEnabled ?? false,
             allowMockLocations: sdkInitParams.allowMockLocations ?? false,
-            requireBackgroundTrackingPermission: sdkInitParams.requireBackgroundTrackingPermission ?? false,
-          }
+            automaticallyRequestPermissions:
+              sdkInitParams.automaticallyRequestPermissions ?? false,
+            loggingEnabled: sdkInitParams.loggingEnabled ?? false,
+            requireBackgroundTrackingPermission:
+              sdkInitParams.requireBackgroundTrackingPermission ?? false,
+          },
         ]);
       });
-    }
-  }
+    },
+  };
 
   const pluginHandle = {};
 
@@ -38,12 +41,15 @@ const HyperTrack = (function () {
    * Returns a string that is used to uniquely identify the device
    */
   pluginHandle.getDeviceId = async function () {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
       exec(
         function (success) {
-          resolve(Serialization.deserializeDeviceId(success))
+          resolve(Serialization.deserializeDeviceId(success));
         },
-        function (failure) { reject(failure) },
+        function (failure) {
+          console.log(`HyperTrack error: ${failure}`);
+          throw Error(err);
+        },
         pluginName,
         "getDeviceID",
         []
@@ -57,9 +63,11 @@ const HyperTrack = (function () {
    */
   pluginHandle.setName = function (name) {
     exec(
-      function (success) {
+      function (_success) {},
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
       },
-      function (failure) { throw Error(failure) },
       pluginName,
       "setName",
       [Serialization.serializeDeviceName(name)]
@@ -72,9 +80,11 @@ const HyperTrack = (function () {
    */
   pluginHandle.setMetadata = function (metadata) {
     exec(
-      function (success) {
+      function (_success) {},
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
       },
-      function (failure) { throw Error(failure) },
       pluginName,
       "setMetadata",
       [metadata]
@@ -87,12 +97,15 @@ const HyperTrack = (function () {
    * @returns current location if success or LocationError if failure
    */
   pluginHandle.addGeotag = async function (geotagData) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
       exec(
         function (success) {
-          resolve(Serialization.deserializeLocationResult(success))
+          resolve(Serialization.deserializeLocationResult(success));
         },
-        function (failure) { reject(failure) },
+        function (failure) {
+          console.log(`HyperTrack error: ${failure}`);
+          throw Error(err);
+        },
         pluginName,
         "addGeotag",
         [Serialization.serializeGeotag(geotagData)]
@@ -101,15 +114,52 @@ const HyperTrack = (function () {
   };
 
   /**
+   * Adds a new geotag with expected location
+   *
+   * @param {Object} data - Geotad data JSON
+   * @param {Location} expectedLocation - Expected location
+   * @returns location with deviation if success or LocationError if failure
+   */
+  pluginHandle.addGeotagWithExpectedLocation = async function (
+    geotagData,
+    expectedLocation
+  ) {
+    return new Promise(function (resolve, _reject) {
+      exec(
+        function (success) {
+          resolve(
+            Serialization.deserializeLocationWithDeviationResult(success)
+          );
+        },
+        function (failure) {
+          console.log(`HyperTrack error: ${failure}`);
+          throw Error(err);
+        },
+        pluginName,
+        "addGeotag",
+        [
+          Serialization.serializeGeotag(
+            geotagData,
+            Serialization.serializeLocation(expectedLocation)
+          ),
+        ]
+      );
+    });
+  };
+
+  /**
    * Reflects the current location of the user or an outage reason
    */
   pluginHandle.getLocation = async function () {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
       exec(
         function (success) {
-          resolve(Serialization.deserializeLocationResult(success))
+          resolve(Serialization.deserializeLocationResult(success));
         },
-        function (failure) { reject(failure) },
+        function (failure) {
+          console.log(`HyperTrack error: ${failure}`);
+          throw Error(err);
+        },
         pluginName,
         "getLocation",
         []
@@ -122,9 +172,11 @@ const HyperTrack = (function () {
    */
   pluginHandle.sync = function () {
     exec(
-      function (success) {
+      function (_success) {},
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
       },
-      function (failure) { throw Error(failure) },
       pluginName,
       "sync",
       []
@@ -133,16 +185,19 @@ const HyperTrack = (function () {
 
   /**
    * Reflects the tracking intent for the device
-   * 
+   *
    * @return {boolean} Whether the user's movement data is getting tracked or not.
    */
   pluginHandle.isTracking = async function () {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
       exec(
         function (success) {
-          resolve(Serialization.deserializeIsTracking(success))
+          resolve(Serialization.deserializeIsTracking(success));
         },
-        function (failure) { reject(failure) },
+        function (failure) {
+          console.log(`HyperTrack error: ${failure}`);
+          throw Error(err);
+        },
         pluginName,
         "isTracking",
         []
@@ -156,12 +211,15 @@ const HyperTrack = (function () {
    * @returns {boolean} true when is available or false when unavailable
    */
   pluginHandle.isAvailable = async function () {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
       exec(
         function (success) {
-          resolve(Serialization.deserializeIsAvailable(success))
+          resolve(Serialization.deserializeIsAvailable(success));
         },
-        function (failure) { reject(failure) },
+        function (failure) {
+          console.log(`HyperTrack error: ${failure}`);
+          throw Error(err);
+        },
         pluginName,
         "isAvailable",
         []
@@ -176,9 +234,11 @@ const HyperTrack = (function () {
    */
   pluginHandle.setAvailability = function (isAvailable) {
     exec(
-      function (success) {
+      function (_success) {},
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
       },
-      function (failure) { throw Error(failure) },
       pluginName,
       "setAvailability",
       [Serialization.serializeIsAvailable(isAvailable)]
@@ -190,9 +250,11 @@ const HyperTrack = (function () {
    */
   pluginHandle.startTracking = function () {
     exec(
-      function (success) {
+      function (_success) {},
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
       },
-      function (failure) { throw Error(failure) },
       pluginName,
       "startTracking",
       []
@@ -204,9 +266,11 @@ const HyperTrack = (function () {
    */
   pluginHandle.stopTracking = function () {
     exec(
-      function (success) {
+      function (_success) {},
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
       },
-      function (failure) { throw Error(failure) },
       pluginName,
       "stopTracking",
       []
@@ -221,9 +285,12 @@ const HyperTrack = (function () {
   pluginHandle.subscribeToTracking = function (callback) {
     exec(
       function (success) {
-        callback(Serialization.deserializeIsTracking(success))
+        callback(Serialization.deserializeIsTracking(success));
       },
-      function (failure) { throw Error(failure) },
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
+      },
       pluginName,
       "subscribeToTracking",
       []
@@ -235,9 +302,11 @@ const HyperTrack = (function () {
    */
   pluginHandle.unsubscribeFromTracking = function () {
     exec(
-      function (success) {
+      function (_success) {},
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
       },
-      function (failure) { throw Error(failure) },
       pluginName,
       "unsubscribeFromTracking",
       []
@@ -252,9 +321,12 @@ const HyperTrack = (function () {
   pluginHandle.subscribeToAvailability = function (callback) {
     exec(
       function (success) {
-        callback(Serialization.deserializeIsAvailable(success))
+        callback(Serialization.deserializeIsAvailable(success));
       },
-      function (failure) { throw Error(failure) },
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
+      },
       pluginName,
       "subscribeToAvailability",
       []
@@ -266,9 +338,11 @@ const HyperTrack = (function () {
    */
   pluginHandle.unsubscribeFromAvailability = function () {
     exec(
-      function (success) {
+      function (_success) {},
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
       },
-      function (failure) { throw Error(failure) },
       pluginName,
       "unsubscribeFromAvailability",
       []
@@ -283,9 +357,12 @@ const HyperTrack = (function () {
   pluginHandle.subscribeToErrors = function (callback) {
     exec(
       function (success) {
-        callback(Serialization.deserializeHyperTrackErrors(success))
+        callback(Serialization.deserializeHyperTrackErrors(success));
       },
-      function (failure) { throw Error(failure) },
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
+      },
       pluginName,
       "subscribeToErrors",
       []
@@ -297,9 +374,11 @@ const HyperTrack = (function () {
    */
   pluginHandle.unsubscribeFromErrors = function () {
     exec(
-      function (success) {
+      function (_success) {},
+      function (failure) {
+        console.log(`HyperTrack error: ${failure}`);
+        throw Error(err);
       },
-      function (failure) { throw Error(failure) },
       pluginName,
       "unsubscribeFromErrors",
       []

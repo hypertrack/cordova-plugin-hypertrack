@@ -2,16 +2,15 @@ package com.hypertrack.sdk.cordova.plugin
 
 import com.hypertrack.sdk.*
 import com.hypertrack.sdk.cordova.plugin.common.*
-
 import com.hypertrack.sdk.cordova.plugin.common.Result
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsAvailable
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsTracking
-import java.util.*
 import org.apache.cordova.CallbackContext
 import org.apache.cordova.CordovaPlugin
 import org.apache.cordova.PluginResult
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
 
 class HyperTrackCordovaPlugin : CordovaPlugin() {
 
@@ -22,7 +21,7 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
     override fun execute(
         action: String,
         args: JSONArray,
-        callbackContext: CallbackContext
+        callbackContext: CallbackContext,
     ): Boolean {
         return invokeSdkMethod(action, args, callbackContext).sendAsCallbackResult(callbackContext)
     }
@@ -30,7 +29,7 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
     private fun invokeSdkMethod(
         methodName: String,
         argsJson: JSONArray,
-        callbackContext: CallbackContext
+        callbackContext: CallbackContext,
     ): Result<*> {
         return when (val method = SdkMethod.values().firstOrNull { it.name == methodName }) {
             SdkMethod.initialize -> {
@@ -144,7 +143,7 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
                 else -> {
                     PluginResult(
                         PluginResult.Status.ERROR,
-                        IllegalArgumentException("Invalid event data: $data").toString()
+                        IllegalArgumentException("Invalid event data: $data").toString(),
                     )
                 }
             }
@@ -165,7 +164,7 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
 
     private inline fun <reified T, N> withArgs(
         args: JSONArray,
-        crossinline sdkMethodCall: (T) -> Result<N>
+        crossinline sdkMethodCall: (T) -> Result<N>,
     ): Result<N> {
         return when (T::class) {
             Map::class -> {
@@ -254,7 +253,7 @@ private fun <S> Result<S>.sendAsCallbackResult(callbackContext: CallbackContext)
                 }
                 else -> {
                     callbackContext.failure(
-                        IllegalArgumentException("Invalid response ${this.success}")
+                        IllegalArgumentException("Invalid response ${this.success}"),
                     )
                     false
                 }
@@ -273,7 +272,8 @@ private fun JSONObject.toMap(): Map<String, Any?> {
             is Boolean,
             is String,
             is Double,
-            is Int -> {
+            is Int,
+            -> {
                 value
             }
             is JSONArray -> {
@@ -295,7 +295,8 @@ private fun JSONArray.toList(): List<Any> {
             is Boolean,
             is String,
             is Double,
-            is Int -> {
+            is Int,
+            -> {
                 value
             }
             is JSONArray -> {

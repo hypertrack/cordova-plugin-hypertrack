@@ -17,5 +17,5 @@ internal enum class SdkMethod {
     isTracking,
     isAvailable,
     addGeotag,
-    sync
+    sync,
 }

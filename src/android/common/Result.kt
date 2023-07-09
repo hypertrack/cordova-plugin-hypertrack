@@ -2,7 +2,7 @@ package com.hypertrack.sdk.cordova.plugin.common
 
 internal sealed class Result<SuccessType> {
     fun <MappedSuccess> flatMapSuccess(
-        onSuccess: (SuccessType) -> Result<MappedSuccess>
+        onSuccess: (SuccessType) -> Result<MappedSuccess>,
     ): Result<MappedSuccess> {
         return when (this) {
             is Success -> {
@@ -30,7 +30,7 @@ internal sealed class Result<SuccessType> {
             is Success -> this.success
             is Failure -> throw Exception(
                 "Result unwrapping failed: ${this.failure}",
-                this.failure
+                this.failure,
             )
         }
     }

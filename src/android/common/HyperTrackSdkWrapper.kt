@@ -1,15 +1,17 @@
 package com.hypertrack.sdk.cordova.plugin.common
 
 import com.hypertrack.sdk.*
+import com.hypertrack.sdk.GeotagResult
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeAvailability
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeDeviceName
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeGeotagData
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeDeviceId
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeErrors
-import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeFailure
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsAvailable
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsTracking
-import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeSuccess
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeLocationErrorFailure
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeLocationSuccess
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeLocationWithDeviationSuccess
 import java.lang.IllegalStateException
 import java.lang.RuntimeException
 
@@ -31,7 +33,7 @@ internal object HyperTrackSdkWrapper {
     ): Result<HyperTrack> {
         return try {
             SdkInitParams
-                .fromMap(args)
+            .fromMap(args)
                 .flatMapSuccess { initParams ->
                     _sdkInstance = HyperTrack.getInstance(initParams.publishableKey)
                     if (initParams.loggingEnabled) {
@@ -40,7 +42,7 @@ internal object HyperTrackSdkWrapper {
                     if (initParams.allowMockLocations) {
                         sdkInstance.allowMockLocations()
                     }
-                    this.sdkInstance.backgroundTrackingRequirement(
+                    sdkInstance.backgroundTrackingRequirement(
                         initParams.requireBackgroundTrackingPermission
                     )
                     Success(sdkInstance)
@@ -73,20 +75,45 @@ internal object HyperTrackSdkWrapper {
         return deserializeGeotagData(args)
             .flatMapSuccess { geotag ->
                 sdkInstance
-                    .addGeotag(geotag.data)
+                    .addGeotag(geotag.data, geotag.expectedLocation)
                     .let { result ->
-                        when (result) {
-                            is GeotagResult.SuccessWithDeviation -> {
-                                serializeSuccess(result.deviceLocation)
+                        if(geotag.expectedLocation == null) {
+                            when (result) {
+                                is GeotagResult.SuccessWithDeviation -> {
+                                    // not supposed to happen
+                                    serializeLocationSuccess(result.deviceLocation)
+                                }
+
+                                is GeotagResult.Success -> {
+                                    serializeLocationSuccess(result.deviceLocation)
+                                }
+
+                                is GeotagResult.Error -> {
+                                    serializeLocationErrorFailure(getLocationError(result.reason))
+                                }
+
+                                else -> {
+                                    throw IllegalArgumentException()
+                                }
                             }
-                            is GeotagResult.Success -> {
-                                serializeSuccess(result.deviceLocation)
-                            }
-                            is GeotagResult.Error -> {
-                                serializeFailure(getLocationError(result.reason))
-                            }
-                            else -> {
-                                throw IllegalArgumentException()
+                        } else {
+                            when (result) {
+                                is GeotagResult.SuccessWithDeviation -> {
+                                    serializeLocationWithDeviationSuccess(result.deviceLocation, result.deviationDistance.toDouble())
+                                }
+
+                                is GeotagResult.Success -> {
+                                    // not supposed to happen
+                                    serializeLocationWithDeviationSuccess(result.deviceLocation, 0.0)
+                                }
+
+                                is GeotagResult.Error -> {
+                                    serializeLocationErrorFailure(getLocationError(result.reason))
+                                }
+
+                                else -> {
+                                    throw IllegalArgumentException()
+                                }
                             }
                         }
                     }
@@ -135,9 +162,9 @@ internal object HyperTrackSdkWrapper {
         return sdkInstance.latestLocation
             .let { result ->
                 if (result.isSuccess) {
-                    serializeSuccess(result.value)
+                    serializeLocationSuccess(result.value)
                 } else {
-                    serializeFailure(getLocationError(result.error))
+                    serializeLocationErrorFailure(getLocationError(result.error))
                 }
             }
             .let { Success(it) }

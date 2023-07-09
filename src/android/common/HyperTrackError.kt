@@ -24,5 +24,5 @@ internal enum class HyperTrackError {
     motionActivityPermissionsRestricted,
     networkConnectionUnavailable,
     invalidPublishableKey,
-    blockedFromRunning
+    blockedFromRunning,
 }

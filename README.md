@@ -1,6 +1,6 @@
 # HyperTrack Cordova Plugin
 
-[![GitHub](https://img.shields.io/github/license/hypertrack/cordova-plugin-hypertrack)](./LICENSE)
+[![GitHub](https://img.shields.io/github/license/hypertrack/cordova-plugin-hypertrack?color=orange)](./LICENSE)
 ![npm](https://img.shields.io/npm/v/cordova-plugin-hypertrack-v3.svg)
 [![iOS SDK](https://img.shields.io/badge/iOS%20SDK-4.16.1-brightgreen.svg)](https://cocoapods.org/pods/HyperTrack)
 ![Android SDK](https://img.shields.io/badge/Android%20SDK-6.4.2-brightgreen.svg)

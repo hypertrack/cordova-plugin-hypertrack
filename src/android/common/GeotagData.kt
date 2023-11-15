@@ -1,4 +1,4 @@
-package com.hypertrack.sdk.cordova.plugin.common
+package com.reactnativehypertracksdk.common
 
 import android.location.Location
 
@@ -9,5 +9,5 @@ import android.location.Location
  */
 internal data class GeotagData(
     val data: Map<String, Any?>,
-    val expectedLocation: Location?,
+    val expectedLocation: Location?
 )

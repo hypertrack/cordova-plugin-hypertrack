@@ -42,7 +42,7 @@ const HyperTrack = (function () {
 
     getDeviceId: async function () {
       return new Promise(function (resolve, _reject) {
-        const onSuccess = function () {
+        const onSuccess = function (success) {
           resolve(Serialization.deserializeDeviceId(success));
         };
         const onError = function (error) {
@@ -124,6 +124,16 @@ const HyperTrack = (function () {
       });
     },
 
+    locate: async function (callback) {
+      const onSuccess = function (success) {
+        callback(Serialization.deserializeLocateResult(success));
+      };
+      const onError = function (error) {
+        throw Error(error);
+      };
+      exec(onSuccess, onError, pluginName, "locate", []);
+    },
+
     setIsAvailable: function (isAvailable) {
       exec(
         function (_success) {},
@@ -156,7 +166,7 @@ const HyperTrack = (function () {
         },
         pluginName,
         "setMetadata",
-        [metadata]
+        [Serialization.serializeMetadata(metadata)]
       );
     },
 
@@ -168,7 +178,7 @@ const HyperTrack = (function () {
         },
         pluginName,
         "setName",
-        [Serialization.serializeDeviceName(name)]
+        [Serialization.serializeName(name)]
       );
     },
 

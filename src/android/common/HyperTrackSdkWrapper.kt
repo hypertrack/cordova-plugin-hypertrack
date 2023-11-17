@@ -1,25 +1,25 @@
-package com.reactnativehypertracksdk.common
+package com.hypertrack.sdk.cordova.plugin.common
 
 import com.hypertrack.sdk.*
 import com.hypertrack.sdk.android.HyperTrack
 import com.hypertrack.sdk.android.HyperTrack.metadata
 import com.hypertrack.sdk.android.Json
 import com.hypertrack.sdk.android.Result
-import com.reactnativehypertracksdk.common.Serialization.deserializeIsAvailable
-import com.reactnativehypertracksdk.common.Serialization.deserializeName
-import com.reactnativehypertracksdk.common.Serialization.deserializeGeotagData
-import com.reactnativehypertracksdk.common.Serialization.deserializeIsTracking
-import com.reactnativehypertracksdk.common.Serialization.deserializeMetadata
-import com.reactnativehypertracksdk.common.Serialization.serializeDeviceId
-import com.reactnativehypertracksdk.common.Serialization.serializeErrors
-import com.reactnativehypertracksdk.common.Serialization.serializeIsAvailable
-import com.reactnativehypertracksdk.common.Serialization.serializeIsTracking
-import com.reactnativehypertracksdk.common.Serialization.serializeLocationErrorFailure
-import com.reactnativehypertracksdk.common.Serialization.serializeLocationResult
-import com.reactnativehypertracksdk.common.Serialization.serializeLocationSuccess
-import com.reactnativehypertracksdk.common.Serialization.serializeLocationWithDeviationSuccess
-import com.reactnativehypertracksdk.common.Serialization.serializeMetadata
-import com.reactnativehypertracksdk.common.Serialization.serializeName
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeIsAvailable
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeName
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeGeotagData
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeIsTracking
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeMetadata
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeDeviceId
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeErrors
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsAvailable
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsTracking
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeLocationErrorFailure
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeLocationResult
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeLocationSuccess
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeLocationWithDeviationSuccess
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeMetadata
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeName
 
 typealias Serialized = Map<String, Any?>
 

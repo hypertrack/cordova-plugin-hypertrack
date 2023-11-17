@@ -1,4 +1,4 @@
-package com.reactnativehypertracksdk.common
+package com.hypertrack.sdk.cordova.plugin.common
 
 /**
  * The list of available methods in the SDK API.

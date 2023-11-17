@@ -1,4 +1,4 @@
-package com.reactnativehypertracksdk.common
+package com.hypertrack.sdk.cordova.plugin.common
 
 internal sealed class WrapperResult<SuccessType> {
     fun <MappedSuccess> flatMapSuccess(

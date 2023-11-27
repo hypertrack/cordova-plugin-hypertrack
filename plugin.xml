@@ -56,13 +56,11 @@
       </feature>
     </config-file>
 
-		<source-file src="src/ios/common/HyperTrackError.swift" target-dir="common"/>
+		<source-file src="src/ios/common/DictionaryDecoder.swift" target-dir="common"/>
+		<source-file src="src/ios/common/GeotagData.swift" target-dir="common"/>
 		<source-file src="src/ios/common/HyperTrackSDKWrapper.swift" target-dir="common"/>
-		<source-file src="src/ios/common/SDKInitParams.swift" target-dir="common"/>
 		<source-file src="src/ios/common/SDKMethod.swift" target-dir="common"/>
 		<source-file src="src/ios/common/Serialization.swift" target-dir="common"/>
-		<source-file src="src/ios/common/GeotagData.swift" target-dir="common"/>
-		<source-file src="src/ios/common/DictionaryDecoder.swift" target-dir="common"/>
 		<source-file src="src/ios/HyperTrackCordovaPlugin.swift" target-dir="common"/>
 		<source-file src="src/ios/MethodWrapper.swift" target-dir="common"/>
 
@@ -78,7 +76,7 @@
         <source url="https://cdn.cocoapods.org/" />
       </config>
       <pods use-frameworks="true">
-        <pod name="HyperTrack" spec="4.16.1"/>
+        <pod name="HyperTrack" spec="5.0.7"/>
       </pods>
     </podspec>
 

@@ -1,37 +1,21 @@
 import HyperTrack
 
 @objc final class HyperTrackCordovaPlugin: CDVPlugin {
-    private var trackingSubscriptionCallbackID: String? = nil
-    private var availabilitySubscriptionCallbackID: String? = nil
     private var errorsSubscriptionCallbackID: String? = nil
+    private var isAvailableSubscriptionCallbackID: String? = nil
+    private var isTrackingSubscriptionCallbackID: String? = nil
+    private var locationSubscriptionCallbackID: String? = nil
 
     private var errorsSubscription: HyperTrack.Cancellable!
+    private var isAvailableSubscription: HyperTrack.Cancellable!
+    private var isTrackingSubscription: HyperTrack.Cancellable!
+    private var locationSubscription: HyperTrack.Cancellable!
 
-    @objc func initialize(_ command: CDVInvokedUrlCommand) {
-        sendAsResult(
-            initializeSDK(command.arguments[0] as! [String: Any]).map { _ in
-                initListeners()
-                return .void
-            },
-            self,
-            command
-        )
-    }
+    private var locateSubscriptionCallbackID: String? = nil
+    private var locateSubscription: HyperTrack.Cancellable!
 
-    @objc func getDeviceID(_ command: CDVInvokedUrlCommand) {
-        sendAsResult(
-            getDeviceIDMethod(),
-            self,
-            command
-        )
-    }
-
-    @objc func sync(_ command: CDVInvokedUrlCommand) {
-        sendAsResult(
-            syncMethod(),
-            self,
-            command
-        )
+    override func pluginInitialize() {
+        initListeners()
     }
 
     @objc func addGeotag(_ command: CDVInvokedUrlCommand) {
@@ -50,17 +34,82 @@ import HyperTrack
         )
     }
 
-    @objc func startTracking(_ command: CDVInvokedUrlCommand) {
+    @objc func getDeviceID(_ command: CDVInvokedUrlCommand) {
         sendAsResult(
-            startTrackingMethod(),
+            getDeviceIDMethod(),
             self,
             command
         )
     }
 
-    @objc func stopTracking(_ command: CDVInvokedUrlCommand) {
+    @objc func getErrors(_ command: CDVInvokedUrlCommand) {
         sendAsResult(
-            stopTrackingMethod(),
+            getErrorsMethod(),
+            self,
+            command
+        )
+    }
+
+    @objc func getIsAvailable(_ command: CDVInvokedUrlCommand) {
+        sendAsResult(
+            getIsAvailableMethod(),
+            self,
+            command
+        )
+    }
+
+    @objc func getIsTracking(_ command: CDVInvokedUrlCommand) {
+        sendAsResult(
+            getIsTrackingMethod(),
+            self,
+            command
+        )
+    }
+
+    @objc func getLocation(_ command: CDVInvokedUrlCommand) {
+        sendAsResult(
+            getLocationMethod(),
+            self,
+            command
+        )
+    }
+
+    @objc func getMetadata(_ command: CDVInvokedUrlCommand) {
+        sendAsResult(
+            getMetadataMethod(),
+            self,
+            command
+        )
+    }
+
+    @objc func getName(_ command: CDVInvokedUrlCommand) {
+        sendAsResult(
+            getNameMethod(),
+            self,
+            command
+        )
+    }
+
+    @objc func locate(_ command: CDVInvokedUrlCommand) {
+        locateSubscription?.cancel()
+        locateSubscriptionCallbackID = command.callbackId
+        locateSubscription = HyperTrack.locate { location in
+            self.sendLocateEvent(location)
+        }
+        sendNoResult(self, command)
+    }
+
+    @objc func setIsAvailable(_ command: CDVInvokedUrlCommand) {
+        sendAsResult(
+            setIsAvailableMethod(command.arguments[0] as! [String: Any]),
+            self,
+            command
+        )
+    }
+
+    @objc func setIsTracking(_ command: CDVInvokedUrlCommand) {
+        sendAsResult(
+            setIsTrackingMethod(command.arguments[0] as! [String: Any]),
             self,
             command
         )
@@ -82,64 +131,28 @@ import HyperTrack
         )
     }
 
-    @objc func setAvailability(_ command: CDVInvokedUrlCommand) {
-        sendAsResult(
-            setAvailabilityMethod(command.arguments[0] as! [String: Any]),
-            self,
-            command
-        )
-    }
-
-    @objc func isAvailable(_ command: CDVInvokedUrlCommand) {
-        sendAsResult(
-            isAvailableMethod(),
-            self,
-            command
-        )
-    }
-
-    @objc func isTracking(_ command: CDVInvokedUrlCommand) {
-        sendAsResult(
-            isTrackingMethod(),
-            self,
-            command
-        )
-    }
-
-    @objc func getLocation(_ command: CDVInvokedUrlCommand) {
-        sendAsResult(
-            getLocationMethod(),
-            self,
-            command
-        )
-    }
-
-    @objc func subscribeToTracking(_ command: CDVInvokedUrlCommand) {
-        trackingSubscriptionCallbackID = command.callbackId
-        sendTrackingEvent(isTracking: sdkInstance.isTracking)
-        sendNoResult(self, command)
-    }
-
-    @objc func subscribeToAvailability(_ command: CDVInvokedUrlCommand) {
-        availabilitySubscriptionCallbackID = command.callbackId
-        sendAvailabilityEvent(isAvailable: sdkInstance.availability)
-        sendNoResult(self, command)
-    }
-
     @objc func subscribeToErrors(_ command: CDVInvokedUrlCommand) {
         errorsSubscriptionCallbackID = command.callbackId
-        sendErrorsEvent(serializeErrors(sdkInstance.errors))
+        sendErrorsEvent(serializeErrors(HyperTrack.errors))
         sendNoResult(self, command)
     }
 
-    @objc func unsubscribeFromTracking(_ command: CDVInvokedUrlCommand) {
-        trackingSubscriptionCallbackID = nil
-        sendAsResult(.success(.void), self, command)
+    @objc func subscribeToIsAvailable(_ command: CDVInvokedUrlCommand) {
+        isAvailableSubscriptionCallbackID = command.callbackId
+        sendIsAvailableEvent(isAvailable: HyperTrack.isAvailable)
+        sendNoResult(self, command)
     }
 
-    @objc func unsubscribeFromAvailability(_ command: CDVInvokedUrlCommand) {
-        availabilitySubscriptionCallbackID = nil
-        sendAsResult(.success(.void), self, command)
+    @objc func subscribeToIsTracking(_ command: CDVInvokedUrlCommand) {
+        isTrackingSubscriptionCallbackID = command.callbackId
+        sendIsTrackingEvent(isTracking: HyperTrack.isTracking)
+        sendNoResult(self, command)
+    }
+
+    @objc func subscribeToLocation(_ command: CDVInvokedUrlCommand) {
+        locationSubscriptionCallbackID = command.callbackId
+        sendLocationEvent(HyperTrack.location)
+        sendNoResult(self, command)
     }
 
     @objc func unsubscribeFromErrors(_ command: CDVInvokedUrlCommand) {
@@ -147,53 +160,43 @@ import HyperTrack
         sendAsResult(.success(.void), self, command)
     }
 
+    @objc func unsubscribeFromIsAvailable(_ command: CDVInvokedUrlCommand) {
+        isAvailableSubscriptionCallbackID = nil
+        sendAsResult(.success(.void), self, command)
+    }
+
+    @objc func unsubscribeFromIsTracking(_ command: CDVInvokedUrlCommand) {
+        isTrackingSubscriptionCallbackID = nil
+        sendAsResult(.success(.void), self, command)
+    }
+
+    @objc func unsubscribeFromLocate(_ command: CDVInvokedUrlCommand) {
+        locateSubscriptionCallbackID = nil
+        sendAsResult(.success(.void), self, command)
+    }
+
+    @objc func unsubscribeFromLocation(_ command: CDVInvokedUrlCommand) {
+        locationSubscriptionCallbackID = nil
+        sendAsResult(.success(.void), self, command)
+    }
+
     private func initListeners() {
-        NotificationCenter.default.addObserver(self, selector: #selector(onTrackingStarted), name: HyperTrack.startedTrackingNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onTrackingStopped), name: HyperTrack.stoppedTrackingNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onAvailable), name: HyperTrack.becameAvailableNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onUnavailable), name: HyperTrack.becameUnavailableNotification, object: nil)
-        errorsSubscription = sdkInstance.subscribeToErrors { errors in
+        errorsSubscription = HyperTrack.subscribeToErrors { errors in
             self.sendErrorsEvent(serializeErrors(errors))
         }
-    }
-
-    @objc
-    private func onTrackingStarted() {
-        sendTrackingEvent(isTracking: true)
-    }
-
-    @objc
-    private func onTrackingStopped() {
-        sendTrackingEvent(isTracking: false)
-    }
-
-    @objc
-    private func onAvailable() {
-        sendAvailabilityEvent(isAvailable: .available)
-    }
-
-    @objc
-    private func onUnavailable() {
-        sendAvailabilityEvent(isAvailable: .unavailable)
-    }
-
-    private func sendTrackingEvent(isTracking: Bool) {
-        guard let trackingSubscriptionCallbackID = trackingSubscriptionCallbackID else {
-            return
+        isAvailableSubscription = HyperTrack.subscribeToIsAvailable { isAvailable in
+            self.sendIsAvailableEvent(isAvailable: isAvailable)
         }
-        let result = CDVPluginResult(
-            status: CDVCommandStatus_OK,
-            messageAs: serializeIsTracking(isTracking)
-        )
-        result!.keepCallback = true
-        commandDelegate!.send(
-            result,
-            callbackId: trackingSubscriptionCallbackID
-        )
+        isTrackingSubscription = HyperTrack.subscribeToIsTracking { isTracking in
+            self.sendIsTrackingEvent(isTracking: isTracking)
+        }
+        locationSubscription = HyperTrack.subscribeToLocation { location in
+            self.sendLocationEvent(location)
+        }
     }
 
-    private func sendAvailabilityEvent(isAvailable: HyperTrack.Availability) {
-        guard let availabilitySubscriptionCallbackID = availabilitySubscriptionCallbackID else {
+    private func sendIsAvailableEvent(isAvailable: Bool) {
+        guard let isAvailableSubscriptionCallbackID = isAvailableSubscriptionCallbackID else {
             return
         }
         let result = CDVPluginResult(
@@ -203,7 +206,22 @@ import HyperTrack
         result!.keepCallback = true
         commandDelegate!.send(
             result,
-            callbackId: availabilitySubscriptionCallbackID
+            callbackId: isAvailableSubscriptionCallbackID
+        )
+    }
+
+    private func sendIsTrackingEvent(isTracking: Bool) {
+        guard let isTrackingSubscriptionCallbackID = isTrackingSubscriptionCallbackID else {
+            return
+        }
+        let result = CDVPluginResult(
+            status: CDVCommandStatus_OK,
+            messageAs: serializeIsTracking(isTracking)
+        )
+        result!.keepCallback = true
+        commandDelegate!.send(
+            result,
+            callbackId: isTrackingSubscriptionCallbackID
         )
     }
 
@@ -221,6 +239,36 @@ import HyperTrack
             callbackId: errorsSubscriptionCallbackID
         )
     }
+
+    private func sendLocateEvent(_ locateResult: Result<HyperTrack.Location, Set<HyperTrack.Error>>) {
+        guard let locateSubscriptionCallbackID = locateSubscriptionCallbackID else {
+            return
+        }
+        let result = CDVPluginResult(
+            status: CDVCommandStatus_OK,
+            messageAs: serializeLocateResult(locateResult)
+        )
+        result!.keepCallback = true
+        commandDelegate!.send(
+            result,
+            callbackId: locateSubscriptionCallbackID
+        )
+    }
+
+    private func sendLocationEvent(_ location: Result<HyperTrack.Location, HyperTrack.Location.Error>) {
+        guard let locationSubscriptionCallbackID = locationSubscriptionCallbackID else {
+            return
+        }
+        let result = CDVPluginResult(
+            status: CDVCommandStatus_OK,
+            messageAs: serializeLocationResult(location)
+        )
+        result!.keepCallback = true
+        commandDelegate!.send(
+            result,
+            callbackId: locationSubscriptionCallbackID
+        )
+    }
 }
 
 func sendAsResult(
@@ -236,6 +284,15 @@ func sendAsResult(
                 CDVPluginResult(
                     status: CDVCommandStatus_OK,
                     messageAs: dict
+                ),
+                callbackId: command.callbackId
+            )
+            return
+        case let .array(array):
+            plugin.commandDelegate!.send(
+                CDVPluginResult(
+                    status: CDVCommandStatus_OK,
+                    messageAs: array
                 ),
                 callbackId: command.callbackId
             )

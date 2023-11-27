@@ -82,10 +82,16 @@ module.exports = {
   },
 
   deserializeMetadata: function (response) {
+    if (response.type != "metadata") {
+      throw new Error(`Invalid metadata type ${response.type}`);
+    }
     return response.value;
   },
 
   deserializeName: function (response) {
+    if (response.type != "name") {
+      throw new Error(`Invalid name type ${response.type}`);
+    }
     return response.value;
   },
 
@@ -122,7 +128,7 @@ module.exports = {
 
   serializeName: function (value) {
     return {
-      type: "deviceName",
+      type: "name",
       value: value,
     };
   },

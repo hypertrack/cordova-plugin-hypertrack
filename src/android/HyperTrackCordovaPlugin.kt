@@ -64,6 +64,12 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
             SdkMethod.getLocation -> {
                 HyperTrackSdkWrapper.getLocation()
             }
+            SdkMethod.getMetadata -> {
+                HyperTrackSdkWrapper.getMetadata()
+            }
+            SdkMethod.getName -> {
+                HyperTrackSdkWrapper.getName()
+            }
             SdkMethod.locate -> {
                 locateSubscription?.cancel()
                 locateEventStream?.let { disposeCallback(it) }
@@ -125,22 +131,27 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
                     }
                     SubscriptionCall.unsubscribeFromErrors -> {
                         errorsEventStream?.let { disposeCallback(it) }
+                        errorsEventStream = null
                         Success(Unit)
                     }
                     SubscriptionCall.unsubscribeFromIsAvailable -> {
                         isAvailableEventStream?.let { disposeCallback(it) }
+                        isAvailableEventStream = null
                         Success(Unit)
                     }
                     SubscriptionCall.unsubscribeFromIsTracking -> {
                         isTrackingEventStream?.let { disposeCallback(it) }
+                        isTrackingEventStream = null
                         Success(Unit)
                     }
                     SubscriptionCall.unsubscribeFromLocate -> {
                         locateEventStream?.let { disposeCallback(it) }
+                        locateEventStream = null
                         Success(Unit)
                     }
                     SubscriptionCall.unsubscribeFromLocation -> {
                         locationEventStream?.let { disposeCallback(it) }
+                        locationEventStream = null
                         Success(Unit)
                     }
                     else -> {
@@ -244,6 +255,10 @@ private fun <S> WrapperResult<S>.sendAsCallbackResult(callbackContext: CallbackC
             when (val success = this.success) {
                 is Map<*, *> -> {
                     callbackContext.success(JSONObject(success))
+                    true
+                }
+                is List<*> -> {
+                    callbackContext.success(JSONArray(success))
                     true
                 }
                 is String -> {

@@ -81,6 +81,14 @@ module.exports = {
     }
   },
 
+  deserializeMetadata: function (response) {
+    return response.value;
+  },
+
+  deserializeName: function (response) {
+    return response.value;
+  },
+
   serializeLocation(location) {
     return {
       type: "location",

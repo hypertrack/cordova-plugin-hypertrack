@@ -4,6 +4,12 @@ const pluginName = "HyperTrackCordovaPlugin";
 
 const HyperTrack = (function () {
   const staticMethods = {
+    /**
+     * Adds a new geotag
+     *
+     * @param {Object} data - Geotad data JSON
+     * @returns current location if success or LocationError if failure
+     */
     addGeotag: async function (geotagData) {
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
@@ -18,6 +24,13 @@ const HyperTrack = (function () {
       });
     },
 
+    /**
+     * Adds a new geotag with expected location
+     *
+     * @param {Object} data - Geotad data JSON
+     * @param {Location} expectedLocation - Expected location
+     * @returns location with deviation if success or LocationError if failure
+     */
     addGeotagWithExpectedLocation: async function (
       geotagData,
       expectedLocation
@@ -40,6 +53,11 @@ const HyperTrack = (function () {
       });
     },
 
+    /**
+     * Returns a string that is used to uniquely identify the device
+     *
+     * @returns {string} Device ID
+     */
     getDeviceId: async function () {
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
@@ -52,6 +70,11 @@ const HyperTrack = (function () {
       });
     },
 
+    /**
+     * Returns a list of errors that blocks SDK from tracking
+     *
+     * @returns {HyperTrackError[]} List of errors
+     */
     getErrors: async function () {
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
@@ -64,6 +87,11 @@ const HyperTrack = (function () {
       });
     },
 
+    /**
+     * Reflects availability of the device for the Nearby search
+     *
+     * @returns true when is available or false when unavailable
+     */
     getIsAvailable: async function () {
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
@@ -76,6 +104,11 @@ const HyperTrack = (function () {
       });
     },
 
+    /**
+     * Reflects the tracking intent for the device
+     *
+     * @returns {boolean} Whether the user's movement data is getting tracked or not.
+     */
     getIsTracking: async function () {
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
@@ -88,6 +121,9 @@ const HyperTrack = (function () {
       });
     },
 
+    /**
+     * Reflects the current location of the user or an outage reason
+     */
     getLocation: async function () {
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
@@ -100,6 +136,11 @@ const HyperTrack = (function () {
       });
     },
 
+    /**
+     * Gets the metadata that is set for the device
+     *
+     * @returns {Object} Metadata JSON
+     */
     getMetadata: async function () {
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
@@ -112,6 +153,11 @@ const HyperTrack = (function () {
       });
     },
 
+    /**
+     * Gets the name that is set for the device
+     *
+     * @returns {string} Device name
+     */
     getName: async function () {
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
@@ -124,6 +170,27 @@ const HyperTrack = (function () {
       });
     },
 
+    /**
+     * Requests one-time location update and returns the location once it is available, or error.
+     *
+     * Only one locate subscription can be active at a time. If you re-subscribe, the old subscription
+     * will be automaticaly removed.
+     *
+     * This method will start location tracking if called, and will stop it when the location is received or
+     * the subscription is cancelled. If any other tracking intent is present (e.g. isAvailable is set to `true`),
+     * the tracking will not be stopped.
+     *
+     * @param callback
+     * @returns EmitterSubscription
+     * @example ```js
+     * const subscription = HyperTrack.locate(location => {
+     *  ...
+     * })
+     *
+     * // to unsubscribe
+     * subscription.remove()
+     * ```
+     */
     locate: async function (callback) {
       const onSuccess = function (success) {
         callback(Serialization.deserializeLocateResult(success));
@@ -134,6 +201,11 @@ const HyperTrack = (function () {
       exec(onSuccess, onError, pluginName, "locate", []);
     },
 
+    /**
+     * Sets the availability of the device for the Nearby search
+     *
+     * @param availability true when is available or false when unavailable
+     */
     setIsAvailable: function (isAvailable) {
       exec(
         function (_success) {},
@@ -146,6 +218,11 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Sets the tracking intent for the device
+     *
+     * @param {boolean} isTracking
+     */
     setIsTracking: function (isTracking) {
       exec(
         function (_success) {},
@@ -158,6 +235,11 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Sets the metadata for the device
+     *
+     * @param {Object} data - Metadata JSON
+     */
     setMetadata: function (metadata) {
       exec(
         function (_success) {},
@@ -170,6 +252,11 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Sets the name for the device
+     *
+     * @param {string} name
+     */
     setName: function (name) {
       exec(
         function (_success) {},
@@ -182,6 +269,26 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Subscribe to tracking errors.
+     *
+     * Only one subscription can be active at a time.
+     * If you re-subscribe, the old subscription will be automaticaly removed.
+     *
+     * @param listener
+     * @returns EmitterSubscription
+     * @example
+     * ```js
+     * const subscription = HyperTrack.subscribeToErrors(errors => {
+     *   errors.forEach(error => {
+     *     // ... error
+     *   })
+     * })
+     *
+     * // later, to stop listening
+     * subscription.remove()
+     * ```
+     */
     subscribeToErrors: function (callback) {
       exec(
         function (success) {
@@ -196,6 +303,26 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Subscribe to availability changes.
+     *
+     * Only one subscription can be active at a time.
+     * If you re-subscribe, the old subscription will be automaticaly removed.
+     *
+     * @param listener
+     * @returns EmitterSubscription
+     * @example
+     * ```js
+     * const subscription = HyperTrack.subscribeToIsAvailable(isAvailable => {
+     *   if (isAvailable) {
+     *     // ... ready to go
+     *   }
+     * })
+     *
+     * // later, to stop listening
+     * subscription.remove()
+     * ```
+     */
     subscribeToIsAvailable: function (callback) {
       exec(
         function (success) {
@@ -210,6 +337,26 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Subscribe to tracking intent changes.
+     *
+     * Only one subscription can be active at a time.
+     * If you re-subscribe, the old subscription will be automaticaly removed.
+     *
+     * @param listener
+     * @returns EmitterSubscription
+     * @example
+     * ```js
+     * const subscription = HyperTrack.subscribeToIsTracking(isTracking => {
+     *   if (isTracking) {
+     *     // ... ready to go
+     *   }
+     * })
+     *
+     * // later, to stop listening
+     * subscription.remove()
+     * ```
+     */
     subscribeToIsTracking: function (callback) {
       exec(
         function (success) {
@@ -224,6 +371,24 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Subscribe to location changes.
+     *
+     * Only one subscription can be active at a time.
+     * If you re-subscribe, the old subscription will be automaticaly removed.
+     *
+     * @param listener
+     * @returns EmitterSubscription
+     * @example
+     * ```js
+     * const subscription = HyperTrack.subscribeToLocation(location => {
+     *   ...
+     * })
+     *
+     * // later, to stop listening
+     * subscription.remove()
+     * ```
+     */
     subscribeToLocation: function (callback) {
       exec(
         function (success) {
@@ -238,6 +403,9 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Unsubscribe from tracking errors
+     */
     unsubscribeFromErrors: function () {
       exec(
         function (_success) {},
@@ -250,6 +418,9 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Unsubscribe from availability changes
+     */
     unsubscribeFromIsAvailable: function () {
       exec(
         function (_success) {},
@@ -262,6 +433,9 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Unsubscribe from tracking intent changes
+     */
     unsubscribeFromIsTracking: function () {
       exec(
         function (_success) {},
@@ -274,6 +448,9 @@ const HyperTrack = (function () {
       );
     },
 
+    /**
+     * Unsubscribe from location changes
+     */
     unsubscribeFromLocation: function () {
       exec(
         function (_success) {},

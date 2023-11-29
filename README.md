@@ -2,10 +2,10 @@
 
 [![GitHub](https://img.shields.io/github/license/hypertrack/cordova-plugin-hypertrack?color=orange)](./LICENSE)
 [![npm](https://img.shields.io/npm/v/cordova-plugin-hypertrack-v3.svg)](https://www.npmjs.com/package/cordova-plugin-hypertrack-v3)
-[![iOS SDK](https://img.shields.io/badge/iOS%20SDK-4.16.1-brightgreen.svg)](https://github.com/hypertrack/sdk-ios)
-[![Android SDK](https://img.shields.io/badge/Android%20SDK-6.4.2-brightgreen.svg)](https://github.com/hypertrack/sdk-android)
+[![iOS SDK](https://img.shields.io/badge/iOS%20SDK-5.0.7-brightgreen.svg)](https://github.com/hypertrack/sdk-ios)
+[![Android SDK](https://img.shields.io/badge/Android%20SDK-7.0.9-brightgreen.svg)](https://github.com/hypertrack/sdk-android)
 
-[HyperTrack](https://www.hypertrack.com/) lets you add live location tracking to your mobile app. Live location is made available along with ongoing activity, tracking controls and tracking outage with reasons. 
+[HyperTrack](https://www.hypertrack.com/) lets you add live location tracking to your mobile app. Live location is made available along with ongoing activity, tracking controls and tracking outage with reasons.
 
 Cordova HyperTrack Plugin is a wrapper around native iOS and Android SDKs that allows to integrate HyperTrack into Cordova apps.
 
@@ -14,6 +14,7 @@ For information about how to get started with Cordova HyperTrack SDK, please che
 ## Installation
 
 Run:
+
 ```Bash
 cordova plugin add cordova-plugin-hypertrack-v3
 ```
@@ -21,7 +22,7 @@ cordova plugin add cordova-plugin-hypertrack-v3
 ## Sample code
 
 [Quickstart Cordova app](https://github.com/hypertrack/quickstart-cordova/)
-[Quickstart Ionic (Cordova) app](https://github.com/hypertrack/quickstart-ionic) 
+[Quickstart Ionic (Cordova) app](https://github.com/hypertrack/quickstart-ionic)
 
 ## Wrapper API Documentation
 

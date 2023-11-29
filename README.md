@@ -22,7 +22,6 @@ cordova plugin add cordova-plugin-hypertrack-v3
 ## Sample code
 
 [Quickstart Cordova app](https://github.com/hypertrack/quickstart-cordova/)
-[Quickstart Ionic (Cordova) app](https://github.com/hypertrack/quickstart-ionic)
 
 ## Wrapper API Documentation
 

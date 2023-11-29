@@ -6,10 +6,13 @@ package com.hypertrack.sdk.cordova.plugin
  */
 @Suppress("EnumEntryName")
 enum class SubscriptionCall {
-    subscribeToTracking,
-    unsubscribeFromTracking,
-    subscribeToAvailability,
-    unsubscribeFromAvailability,
     subscribeToErrors,
+    subscribeToIsAvailable,
+    subscribeToIsTracking,
+    subscribeToLocation,
     unsubscribeFromErrors,
+    unsubscribeFromIsAvailable,
+    unsubscribeFromIsTracking,
+    unsubscribeFromLocate,
+    unsubscribeFromLocation,
 }

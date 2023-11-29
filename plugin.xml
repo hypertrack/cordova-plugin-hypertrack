@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-hypertrack-v3"
-    version="1.1.0">
+    version="2.0.0">
   <name>HyperTrackPlugin</name>
   <description>Cordova HyperTrack Plugin is a wrapper around native iOS and Android SDKs that allows to integrate HyperTrack into Cordova apps.</description>
   <license>MIT</license>
@@ -34,11 +34,8 @@
     <source-file src="src/android/NoCallback.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin" />
     <source-file src="src/android/SubscriptionCall.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin" />
     <source-file src="src/android/common/GeotagData.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
-    <source-file src="src/android/common/HyperTrackError.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
     <source-file src="src/android/common/HyperTrackSdkWrapper.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
-    <source-file src="src/android/common/LocationError.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
-    <source-file src="src/android/common/Result.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
-    <source-file src="src/android/common/SdkInitParams.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
+    <source-file src="src/android/common/WrapperResult.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
     <source-file src="src/android/common/SdkMethod.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
     <source-file src="src/android/common/Serialization.kt" target-dir="java/com/hypertrack/sdk/cordova/plugin/common" />
 
@@ -59,13 +56,11 @@
       </feature>
     </config-file>
 
-		<source-file src="src/ios/common/HyperTrackError.swift" target-dir="common"/>
+		<source-file src="src/ios/common/DictionaryDecoder.swift" target-dir="common"/>
+		<source-file src="src/ios/common/GeotagData.swift" target-dir="common"/>
 		<source-file src="src/ios/common/HyperTrackSDKWrapper.swift" target-dir="common"/>
-		<source-file src="src/ios/common/SDKInitParams.swift" target-dir="common"/>
 		<source-file src="src/ios/common/SDKMethod.swift" target-dir="common"/>
 		<source-file src="src/ios/common/Serialization.swift" target-dir="common"/>
-		<source-file src="src/ios/common/GeotagData.swift" target-dir="common"/>
-		<source-file src="src/ios/common/DictionaryDecoder.swift" target-dir="common"/>
 		<source-file src="src/ios/HyperTrackCordovaPlugin.swift" target-dir="common"/>
 		<source-file src="src/ios/MethodWrapper.swift" target-dir="common"/>
 
@@ -81,7 +76,7 @@
         <source url="https://cdn.cocoapods.org/" />
       </config>
       <pods use-frameworks="true">
-        <pod name="HyperTrack" spec="4.16.1"/>
+        <pod name="HyperTrack" spec="5.0.7"/>
       </pods>
     </podspec>
 

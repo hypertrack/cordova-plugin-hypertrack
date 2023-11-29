@@ -5,386 +5,464 @@ const pluginName = "HyperTrackCordovaPlugin";
 const HyperTrack = (function () {
   const staticMethods = {
     /**
-     * Creates an SDK instance.
+     * Adds a new geotag
      *
-     * @param {string} publishableKey
-     * @param {Object} sdkInitParams { loggingEnabled?: boolean; allowMockLocations?: boolean; requireBackgroundTrackingPermission?: boolean; }
-     * @returns HyperTrack instance
+     * @param {Object} data - Geotad data JSON
+     * @returns current location if success or LocationError if failure
      */
-    initialize: async function (publishableKey, sdkInitParams = {}) {
+    addGeotag: async function (geotagData) {
       return new Promise(function (resolve, _reject) {
-        const onSuccess = function () {
-          resolve(pluginHandle);
+        const onSuccess = function (success) {
+          resolve(Serialization.deserializeLocationResult(success));
         };
-        const onError = function (err) {
-          console.log(`HyperTrack init error: ${err}`);
-          throw Error(err);
+        const onError = function (error) {
+          throw Error(error);
         };
-        exec(onSuccess, onError, pluginName, "initialize", [
-          {
-            publishableKey,
-            allowMockLocations: sdkInitParams.allowMockLocations ?? false,
-            automaticallyRequestPermissions:
-              sdkInitParams.automaticallyRequestPermissions ?? false,
-            loggingEnabled: sdkInitParams.loggingEnabled ?? false,
-            requireBackgroundTrackingPermission:
-              sdkInitParams.requireBackgroundTrackingPermission ?? false,
-          },
+        exec(onSuccess, onError, pluginName, "addGeotag", [
+          Serialization.serializeGeotag(geotagData),
         ]);
       });
     },
-  };
 
-  const pluginHandle = {};
-
-  /**
-   * Returns a string that is used to uniquely identify the device
-   */
-  pluginHandle.getDeviceId = async function () {
-    return new Promise(function (resolve, _reject) {
-      exec(
-        function (success) {
-          resolve(Serialization.deserializeDeviceId(success));
-        },
-        function (failure) {
-          console.log(`HyperTrack error: ${failure}`);
-          throw Error(err);
-        },
-        pluginName,
-        "getDeviceID",
-        []
-      );
-    });
-  };
-
-  /**
-   * Sets the name for the device
-   * @param {string} name
-   */
-  pluginHandle.setName = function (name) {
-    exec(
-      function (_success) {},
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "setName",
-      [Serialization.serializeDeviceName(name)]
-    );
-  };
-
-  /**
-   * Sets the metadata for the device
-   * @param {Object} data - Metadata JSON
-   */
-  pluginHandle.setMetadata = function (metadata) {
-    exec(
-      function (_success) {},
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "setMetadata",
-      [metadata]
-    );
-  };
-
-  /**
-   * Adds a new geotag
-   * @param {Object} data - Geotad data JSON
-   * @returns current location if success or LocationError if failure
-   */
-  pluginHandle.addGeotag = async function (geotagData) {
-    return new Promise(function (resolve, _reject) {
-      exec(
-        function (success) {
-          resolve(Serialization.deserializeLocationResult(success));
-        },
-        function (failure) {
-          console.log(`HyperTrack error: ${failure}`);
-          throw Error(err);
-        },
-        pluginName,
-        "addGeotag",
-        [Serialization.serializeGeotag(geotagData)]
-      );
-    });
-  };
-
-  /**
-   * Adds a new geotag with expected location
-   *
-   * @param {Object} data - Geotad data JSON
-   * @param {Location} expectedLocation - Expected location
-   * @returns location with deviation if success or LocationError if failure
-   */
-  pluginHandle.addGeotagWithExpectedLocation = async function (
-    geotagData,
-    expectedLocation
-  ) {
-    return new Promise(function (resolve, _reject) {
-      exec(
-        function (success) {
+    /**
+     * Adds a new geotag with expected location
+     *
+     * @param {Object} data - Geotad data JSON
+     * @param {Location} expectedLocation - Expected location
+     * @returns location with deviation if success or LocationError if failure
+     */
+    addGeotagWithExpectedLocation: async function (
+      geotagData,
+      expectedLocation
+    ) {
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
           resolve(
             Serialization.deserializeLocationWithDeviationResult(success)
           );
-        },
-        function (failure) {
-          console.log(`HyperTrack error: ${failure}`);
-          throw Error(err);
-        },
-        pluginName,
-        "addGeotag",
-        [
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "addGeotag", [
           Serialization.serializeGeotag(
             geotagData,
             Serialization.serializeLocation(expectedLocation)
           ),
-        ]
-      );
-    });
-  };
+        ]);
+      });
+    },
 
-  /**
-   * Reflects the current location of the user or an outage reason
-   */
-  pluginHandle.getLocation = async function () {
-    return new Promise(function (resolve, _reject) {
-      exec(
-        function (success) {
-          resolve(Serialization.deserializeLocationResult(success));
-        },
-        function (failure) {
-          console.log(`HyperTrack error: ${failure}`);
-          throw Error(err);
-        },
-        pluginName,
-        "getLocation",
-        []
-      );
-    });
-  };
+    /**
+     * Returns a string that is used to uniquely identify the device
+     *
+     * @returns {string} Device ID
+     */
+    getDeviceId: async function () {
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
+          resolve(Serialization.deserializeDeviceId(success));
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "getDeviceID", []);
+      });
+    },
 
-  /**
-   * Syncs the device state with the HyperTrack servers
-   */
-  pluginHandle.sync = function () {
-    exec(
-      function (_success) {},
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "sync",
-      []
-    );
-  };
+    /**
+     * Returns a list of errors that blocks SDK from tracking
+     *
+     * @returns {HyperTrackError[]} List of errors
+     */
+    getErrors: async function () {
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
+          resolve(Serialization.deserializeHyperTrackErrors(success));
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "getErrors", []);
+      });
+    },
 
-  /**
-   * Reflects the tracking intent for the device
-   *
-   * @return {boolean} Whether the user's movement data is getting tracked or not.
-   */
-  pluginHandle.isTracking = async function () {
-    return new Promise(function (resolve, _reject) {
-      exec(
-        function (success) {
-          resolve(Serialization.deserializeIsTracking(success));
-        },
-        function (failure) {
-          console.log(`HyperTrack error: ${failure}`);
-          throw Error(err);
-        },
-        pluginName,
-        "isTracking",
-        []
-      );
-    });
-  };
-
-  /**
-   * Reflects availability of the device for the Nearby search
-   *
-   * @returns {boolean} true when is available or false when unavailable
-   */
-  pluginHandle.isAvailable = async function () {
-    return new Promise(function (resolve, _reject) {
-      exec(
-        function (success) {
+    /**
+     * Reflects availability of the device for the Nearby search
+     *
+     * @returns true when is available or false when unavailable
+     */
+    getIsAvailable: async function () {
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
           resolve(Serialization.deserializeIsAvailable(success));
-        },
-        function (failure) {
-          console.log(`HyperTrack error: ${failure}`);
-          throw Error(err);
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "getIsAvailable", []);
+      });
+    },
+
+    /**
+     * Reflects the tracking intent for the device
+     *
+     * @returns {boolean} Whether the user's movement data is getting tracked or not.
+     */
+    getIsTracking: async function () {
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
+          resolve(Serialization.deserializeIsTracking(success));
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "getIsTracking", []);
+      });
+    },
+
+    /**
+     * Reflects the current location of the user or an outage reason
+     */
+    getLocation: async function () {
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
+          resolve(Serialization.deserializeLocationResult(success));
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "getLocation", []);
+      });
+    },
+
+    /**
+     * Gets the metadata that is set for the device
+     *
+     * @returns {Object} Metadata JSON
+     */
+    getMetadata: async function () {
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
+          resolve(Serialization.deserializeMetadata(success));
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "getMetadata", []);
+      });
+    },
+
+    /**
+     * Gets the name that is set for the device
+     *
+     * @returns {string} Device name
+     */
+    getName: async function () {
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
+          resolve(Serialization.deserializeName(success));
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "getName", []);
+      });
+    },
+
+    /**
+     * Requests one-time location update and returns the location once it is available, or error.
+     *
+     * Only one locate subscription can be active at a time. If you re-subscribe, the old subscription
+     * will be automaticaly removed.
+     *
+     * This method will start location tracking if called, and will stop it when the location is received or
+     * the subscription is cancelled. If any other tracking intent is present (e.g. isAvailable is set to `true`),
+     * the tracking will not be stopped.
+     *
+     * @param callback
+     * @returns EmitterSubscription
+     * @example ```js
+     * const subscription = HyperTrack.locate(location => {
+     *  ...
+     * })
+     *
+     * // to unsubscribe
+     * subscription.remove()
+     * ```
+     */
+    locate: async function (callback) {
+      const onSuccess = function (success) {
+        callback(Serialization.deserializeLocateResult(success));
+      };
+      const onError = function (error) {
+        throw Error(error);
+      };
+      exec(onSuccess, onError, pluginName, "locate", []);
+    },
+
+    /**
+     * Sets the availability of the device for the Nearby search
+     *
+     * @param availability true when is available or false when unavailable
+     */
+    setIsAvailable: function (isAvailable) {
+      exec(
+        function (_success) {},
+        function (error) {
+          throw Error(error);
         },
         pluginName,
-        "isAvailable",
+        "setIsAvailable",
+        [Serialization.serializeIsAvailable(isAvailable)]
+      );
+    },
+
+    /**
+     * Sets the tracking intent for the device
+     *
+     * @param {boolean} isTracking
+     */
+    setIsTracking: function (isTracking) {
+      exec(
+        function (_success) {},
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "setIsTracking",
+        [Serialization.serializeIsTracking(isTracking)]
+      );
+    },
+
+    /**
+     * Sets the metadata for the device
+     *
+     * @param {Object} data - Metadata JSON
+     */
+    setMetadata: function (metadata) {
+      exec(
+        function (_success) {},
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "setMetadata",
+        [Serialization.serializeMetadata(metadata)]
+      );
+    },
+
+    /**
+     * Sets the name for the device
+     *
+     * @param {string} name
+     */
+    setName: function (name) {
+      exec(
+        function (_success) {},
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "setName",
+        [Serialization.serializeName(name)]
+      );
+    },
+
+    /**
+     * Subscribe to tracking errors.
+     *
+     * Only one subscription can be active at a time.
+     * If you re-subscribe, the old subscription will be automaticaly removed.
+     *
+     * @param listener
+     * @returns EmitterSubscription
+     * @example
+     * ```js
+     * const subscription = HyperTrack.subscribeToErrors(errors => {
+     *   errors.forEach(error => {
+     *     // ... error
+     *   })
+     * })
+     *
+     * // later, to stop listening
+     * subscription.remove()
+     * ```
+     */
+    subscribeToErrors: function (callback) {
+      exec(
+        function (success) {
+          callback(Serialization.deserializeHyperTrackErrors(success));
+        },
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "subscribeToErrors",
         []
       );
-    });
-  };
+    },
 
-  /**
-   * Sets the availability of the device for the Nearby search
-   *
-   * @param availability true when is available or false when unavailable
-   */
-  pluginHandle.setAvailability = function (isAvailable) {
-    exec(
-      function (_success) {},
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "setAvailability",
-      [Serialization.serializeIsAvailable(isAvailable)]
-    );
-  };
+    /**
+     * Subscribe to availability changes.
+     *
+     * Only one subscription can be active at a time.
+     * If you re-subscribe, the old subscription will be automaticaly removed.
+     *
+     * @param listener
+     * @returns EmitterSubscription
+     * @example
+     * ```js
+     * const subscription = HyperTrack.subscribeToIsAvailable(isAvailable => {
+     *   if (isAvailable) {
+     *     // ... ready to go
+     *   }
+     * })
+     *
+     * // later, to stop listening
+     * subscription.remove()
+     * ```
+     */
+    subscribeToIsAvailable: function (callback) {
+      exec(
+        function (success) {
+          callback(Serialization.deserializeIsAvailable(success));
+        },
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "subscribeToIsAvailable",
+        []
+      );
+    },
 
-  /**
-   * Expresses an intent to start location tracking for the device
-   */
-  pluginHandle.startTracking = function () {
-    exec(
-      function (_success) {},
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "startTracking",
-      []
-    );
-  };
+    /**
+     * Subscribe to tracking intent changes.
+     *
+     * Only one subscription can be active at a time.
+     * If you re-subscribe, the old subscription will be automaticaly removed.
+     *
+     * @param listener
+     * @returns EmitterSubscription
+     * @example
+     * ```js
+     * const subscription = HyperTrack.subscribeToIsTracking(isTracking => {
+     *   if (isTracking) {
+     *     // ... ready to go
+     *   }
+     * })
+     *
+     * // later, to stop listening
+     * subscription.remove()
+     * ```
+     */
+    subscribeToIsTracking: function (callback) {
+      exec(
+        function (success) {
+          callback(Serialization.deserializeIsTracking(success));
+        },
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "subscribeToIsTracking",
+        []
+      );
+    },
 
-  /**
-   * Stops location tracking immediately
-   */
-  pluginHandle.stopTracking = function () {
-    exec(
-      function (_success) {},
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "stopTracking",
-      []
-    );
-  };
+    /**
+     * Subscribe to location changes.
+     *
+     * Only one subscription can be active at a time.
+     * If you re-subscribe, the old subscription will be automaticaly removed.
+     *
+     * @param listener
+     * @returns EmitterSubscription
+     * @example
+     * ```js
+     * const subscription = HyperTrack.subscribeToLocation(location => {
+     *   ...
+     * })
+     *
+     * // later, to stop listening
+     * subscription.remove()
+     * ```
+     */
+    subscribeToLocation: function (callback) {
+      exec(
+        function (success) {
+          callback(Serialization.deserializeLocationResult(success));
+        },
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "subscribeToLocation",
+        []
+      );
+    },
 
-  /**
-   * Subscribe to tracking intent changes
-   *
-   * @param listener (isTracking: boolean) => {}
-   */
-  pluginHandle.subscribeToTracking = function (callback) {
-    exec(
-      function (success) {
-        callback(Serialization.deserializeIsTracking(success));
-      },
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "subscribeToTracking",
-      []
-    );
-  };
+    /**
+     * Unsubscribe from tracking errors
+     */
+    unsubscribeFromErrors: function () {
+      exec(
+        function (_success) {},
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "unsubscribeFromErrors",
+        []
+      );
+    },
 
-  /**
-   * Unsubscribe from tracking intent updates
-   */
-  pluginHandle.unsubscribeFromTracking = function () {
-    exec(
-      function (_success) {},
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "unsubscribeFromTracking",
-      []
-    );
-  };
+    /**
+     * Unsubscribe from availability changes
+     */
+    unsubscribeFromIsAvailable: function () {
+      exec(
+        function (_success) {},
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "unsubscribeFromIsAvailable",
+        []
+      );
+    },
 
-  /**
-   * Subscribe to availability changes
-   *
-   * @param listener (isAvailable: boolean) => {}
-   */
-  pluginHandle.subscribeToAvailability = function (callback) {
-    exec(
-      function (success) {
-        callback(Serialization.deserializeIsAvailable(success));
-      },
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "subscribeToAvailability",
-      []
-    );
-  };
+    /**
+     * Unsubscribe from tracking intent changes
+     */
+    unsubscribeFromIsTracking: function () {
+      exec(
+        function (_success) {},
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "unsubscribeFromIsTracking",
+        []
+      );
+    },
 
-  /**
-   * Unsubscribe from availability updates
-   */
-  pluginHandle.unsubscribeFromAvailability = function () {
-    exec(
-      function (_success) {},
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "unsubscribeFromAvailability",
-      []
-    );
+    /**
+     * Unsubscribe from location changes
+     */
+    unsubscribeFromLocation: function () {
+      exec(
+        function (_success) {},
+        function (error) {
+          throw Error(error);
+        },
+        pluginName,
+        "unsubscribeFromLocation",
+        []
+      );
+    },
   };
-
-  /**
-   * Subscribe to tracking errors
-   *
-   * @param listener HyperTrackError[] => {}
-   */
-  pluginHandle.subscribeToErrors = function (callback) {
-    exec(
-      function (success) {
-        callback(Serialization.deserializeHyperTrackErrors(success));
-      },
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "subscribeToErrors",
-      []
-    );
-  };
-
-  /**
-   * Unsubscribe from errors updates
-   */
-  pluginHandle.unsubscribeFromErrors = function () {
-    exec(
-      function (_success) {},
-      function (failure) {
-        console.log(`HyperTrack error: ${failure}`);
-        throw Error(err);
-      },
-      pluginName,
-      "unsubscribeFromErrors",
-      []
-    );
-  };
-
   return staticMethods;
 })();
 

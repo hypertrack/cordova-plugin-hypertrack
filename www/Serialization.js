@@ -1,49 +1,97 @@
-let deserializeHyperTrackErrors = function (response) {
-  const result = [];
-  for (let i = 0; i < response.length; i++) {
-    result.push(response[i].value);
-  }
+let deserializeHyperTrackErrors = function (errors) {
+  let result = errors.map((error) => {
+    if (error.type != "error") {
+      throw new Error("Invalid error type");
+    }
+    return error.value;
+  });
   return result;
 };
 
-let deserializeLocationErrorErrors = function (response) {
-  const deserialized = JSON.parse(JSON.stringify(response));
-  deserialized.value.value = deserializeHyperTrackErrors(
-    deserialized.value.value
-  );
-  return deserialized;
+let deserializeLocationError = function (locationError) {
+  switch (locationError.type) {
+    case "notRunning":
+    case "starting":
+      return locationError;
+    case "errors":
+      return {
+        type: "errors",
+        value: deserializeHyperTrackErrors(locationError.value),
+      };
+  }
 };
 
 module.exports = {
-  deserializeLocationErrorErrors: deserializeLocationErrorErrors,
-
-  deserializeLocationResult: function (response) {
-    if (response.type == "failure" && response.value.type == "errors") {
-      return deserializeLocationErrorErrors(response);
-    } else {
-      return response;
-    }
-  },
-
-  deserializeLocationWithDeviationResult: function (response) {
-    if (response.type == "failure" && response.value.type == "errors") {
-      return deserializeLocationErrorErrors(response);
-    } else {
-      return response;
-    }
-  },
-
-  deserializeHyperTrackErrors: deserializeHyperTrackErrors,
-
   deserializeDeviceId: function (response) {
     return response.value;
   },
+
+  deserializeHyperTrackErrors: deserializeHyperTrackErrors,
 
   deserializeIsAvailable: function (response) {
     return response.value;
   },
 
   deserializeIsTracking: function (response) {
+    return response.value;
+  },
+
+  deserializeLocateResult: function (response) {
+    if (response.type == "success") {
+      return {
+        type: "success",
+        value: response.value.value,
+      };
+    } else {
+      return {
+        type: "failure",
+        value: deserializeHyperTrackErrors(response.value),
+      };
+    }
+  },
+
+  deserializeLocationResult: function (response) {
+    if (response.type == "success") {
+      return {
+        type: "success",
+        value: response.value.value,
+      };
+    } else {
+      return {
+        type: "failure",
+        value: deserializeLocationError(response.value),
+      };
+    }
+  },
+
+  deserializeLocationWithDeviationResult: function (response) {
+    if (response.type == "success") {
+      return {
+        type: "success",
+        value: {
+          location: response.value.value.location,
+          deviation: response.value.value.deviation,
+        },
+      };
+    } else {
+      return {
+        type: "failure",
+        value: deserializeLocationError(response.value),
+      };
+    }
+  },
+
+  deserializeMetadata: function (response) {
+    if (response.type != "metadata") {
+      throw new Error(`Invalid metadata type ${response.type}`);
+    }
+    return response.value;
+  },
+
+  deserializeName: function (response) {
+    if (response.type != "name") {
+      throw new Error(`Invalid name type ${response.type}`);
+    }
     return response.value;
   },
 
@@ -64,9 +112,23 @@ module.exports = {
     };
   },
 
-  serializeDeviceName: function (value) {
+  serializeIsTracking: function (value) {
     return {
-      type: "deviceName",
+      type: "isTracking",
+      value: value,
+    };
+  },
+
+  serializeMetadata: function (value) {
+    return {
+      type: "metadata",
+      value: value,
+    };
+  },
+
+  serializeName: function (value) {
+    return {
+      type: "name",
       value: value,
     };
   },

@@ -1,10 +1,14 @@
 package com.hypertrack.sdk.cordova.plugin
 
-import com.hypertrack.sdk.*
+import com.hypertrack.sdk.android.HyperTrack
 import com.hypertrack.sdk.cordova.plugin.common.*
-import com.hypertrack.sdk.cordova.plugin.common.Result
+import com.hypertrack.sdk.cordova.plugin.common.HyperTrackSdkWrapper
+import com.hypertrack.sdk.cordova.plugin.common.SdkMethod
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeErrors
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsAvailable
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsTracking
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeLocateResult
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeLocationResult
 import org.apache.cordova.CallbackContext
 import org.apache.cordova.CordovaPlugin
 import org.apache.cordova.PluginResult
@@ -14,9 +18,17 @@ import java.util.*
 
 class HyperTrackCordovaPlugin : CordovaPlugin() {
 
-    private var isTrackingEventStream: CallbackContext? = null
-    private var isAvailableEventStream: CallbackContext? = null
     private var errorsEventStream: CallbackContext? = null
+    private var isAvailableEventStream: CallbackContext? = null
+    private var isTrackingEventStream: CallbackContext? = null
+    private var locateEventStream: CallbackContext? = null
+    private var locationEventStream: CallbackContext? = null
+
+    private var locateSubscription: HyperTrack.Cancellable? = null
+
+    override fun pluginInitialize() {
+        initListeners()
+    }
 
     override fun execute(
         action: String,
@@ -30,46 +42,51 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
         methodName: String,
         argsJson: JSONArray,
         callbackContext: CallbackContext,
-    ): Result<*> {
+    ): WrapperResult<*> {
         return when (val method = SdkMethod.values().firstOrNull { it.name == methodName }) {
-            SdkMethod.initialize -> {
-                withArgs<Map<String, Any?>, Unit>(argsJson) { args ->
-                    HyperTrackSdkWrapper.initializeSdk(args).mapSuccess {
-                        initListeners(it)
-                    }
-                }
-            }
-            SdkMethod.getDeviceID -> {
-                HyperTrackSdkWrapper.getDeviceId()
-            }
-            SdkMethod.isTracking -> {
-                HyperTrackSdkWrapper.isTracking()
-            }
-            SdkMethod.isAvailable -> {
-                HyperTrackSdkWrapper.isAvailable()
-            }
-            SdkMethod.setAvailability -> {
-                withArgs<Map<String, Boolean>, Unit>(argsJson) { args ->
-                    HyperTrackSdkWrapper.setAvailability(args)
-                }
-            }
-            SdkMethod.getLocation -> {
-                HyperTrackSdkWrapper.getLocation()
-            }
-            SdkMethod.startTracking -> {
-                HyperTrackSdkWrapper.startTracking()
-            }
-            SdkMethod.stopTracking -> {
-                HyperTrackSdkWrapper.stopTracking()
-            }
             SdkMethod.addGeotag -> {
                 withArgs<Map<String, Any?>, Map<String, Any?>>(argsJson) { args ->
                     HyperTrackSdkWrapper.addGeotag(args)
                 }
             }
-            SdkMethod.setName -> {
+            SdkMethod.getDeviceID -> {
+                HyperTrackSdkWrapper.getDeviceId()
+            }
+            SdkMethod.getErrors -> {
+                HyperTrackSdkWrapper.getErrors()
+            }
+            SdkMethod.getIsAvailable -> {
+                HyperTrackSdkWrapper.getIsAvailable()
+            }
+            SdkMethod.getIsTracking -> {
+                HyperTrackSdkWrapper.getIsTracking()
+            }
+            SdkMethod.getLocation -> {
+                HyperTrackSdkWrapper.getLocation()
+            }
+            SdkMethod.getMetadata -> {
+                HyperTrackSdkWrapper.getMetadata()
+            }
+            SdkMethod.getName -> {
+                HyperTrackSdkWrapper.getName()
+            }
+            SdkMethod.locate -> {
+                locateSubscription?.cancel()
+                locateEventStream?.let { disposeCallback(it) }
+                locateEventStream = callbackContext
+                locateSubscription = HyperTrack.locate {
+                    sendEvent(callbackContext, serializeLocateResult(it))
+                }
+                Success(NoCallback)
+            }
+            SdkMethod.setIsAvailable -> {
                 withArgs<Map<String, Any?>, Unit>(argsJson) { args ->
-                    HyperTrackSdkWrapper.setName(args)
+                    HyperTrackSdkWrapper.setIsAvailable(args)
+                }
+            }
+            SdkMethod.setIsTracking -> {
+                withArgs<Map<String, Any?>, Unit>(argsJson) { args ->
+                    HyperTrackSdkWrapper.setIsTracking(args)
                 }
             }
             SdkMethod.setMetadata -> {
@@ -77,8 +94,10 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
                     HyperTrackSdkWrapper.setMetadata(args)
                 }
             }
-            SdkMethod.sync -> {
-                HyperTrackSdkWrapper.sync()
+            SdkMethod.setName -> {
+                withArgs<Map<String, Any?>, Unit>(argsJson) { args ->
+                    HyperTrackSdkWrapper.setName(args)
+                }
             }
             else -> {
                 when (
@@ -86,38 +105,53 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
                         it.name == methodName
                     }
                 ) {
-                    SubscriptionCall.subscribeToTracking -> {
-                        isTrackingEventStream?.let { disposeCallback(it) }
-                        isTrackingEventStream = callbackContext
-                        HyperTrackSdkWrapper.isTracking().mapSuccess {
-                            sendEvent(callbackContext, it)
-                            NoCallback
-                        }
-                    }
-                    SubscriptionCall.subscribeToAvailability -> {
-                        isAvailableEventStream?.let { disposeCallback(it) }
-                        isAvailableEventStream = callbackContext
-                        HyperTrackSdkWrapper.isAvailable().mapSuccess {
-                            sendEvent(callbackContext, it)
-                            NoCallback
-                        }
-                    }
                     SubscriptionCall.subscribeToErrors -> {
                         errorsEventStream?.let { disposeCallback(it) }
                         errorsEventStream = callbackContext
-                        sendEvent(callbackContext, HyperTrackSdkWrapper.getInitialErrors())
+                        sendEvent(callbackContext, serializeErrors(HyperTrack.errors))
                         Success(NoCallback)
                     }
-                    SubscriptionCall.unsubscribeFromTracking -> {
-                        isTrackingEventStream?.let { disposeCallback(it) }
-                        Success(Unit)
-                    }
-                    SubscriptionCall.unsubscribeFromAvailability -> {
+                    SubscriptionCall.subscribeToIsAvailable -> {
                         isAvailableEventStream?.let { disposeCallback(it) }
-                        Success(Unit)
+                        isAvailableEventStream = callbackContext
+                        sendEvent(callbackContext, serializeIsAvailable(HyperTrack.isAvailable))
+                        Success(NoCallback)
+                    }
+                    SubscriptionCall.subscribeToIsTracking -> {
+                        isTrackingEventStream?.let { disposeCallback(it) }
+                        isTrackingEventStream = callbackContext
+                        sendEvent(callbackContext, serializeIsTracking(HyperTrack.isTracking))
+                        Success(NoCallback)
+                    }
+                    SubscriptionCall.subscribeToLocation -> {
+                        locationEventStream?.let { disposeCallback(it) }
+                        locationEventStream = callbackContext
+                        sendEvent(callbackContext, serializeLocationResult(HyperTrack.location))
+                        Success(NoCallback)
                     }
                     SubscriptionCall.unsubscribeFromErrors -> {
                         errorsEventStream?.let { disposeCallback(it) }
+                        errorsEventStream = null
+                        Success(Unit)
+                    }
+                    SubscriptionCall.unsubscribeFromIsAvailable -> {
+                        isAvailableEventStream?.let { disposeCallback(it) }
+                        isAvailableEventStream = null
+                        Success(Unit)
+                    }
+                    SubscriptionCall.unsubscribeFromIsTracking -> {
+                        isTrackingEventStream?.let { disposeCallback(it) }
+                        isTrackingEventStream = null
+                        Success(Unit)
+                    }
+                    SubscriptionCall.unsubscribeFromLocate -> {
+                        locateEventStream?.let { disposeCallback(it) }
+                        locateEventStream = null
+                        Success(Unit)
+                    }
+                    SubscriptionCall.unsubscribeFromLocation -> {
+                        locationEventStream?.let { disposeCallback(it) }
+                        locationEventStream = null
                         Success(Unit)
                     }
                     else -> {
@@ -164,8 +198,8 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
 
     private inline fun <reified T, N> withArgs(
         args: JSONArray,
-        crossinline sdkMethodCall: (T) -> Result<N>,
-    ): Result<N> {
+        crossinline sdkMethodCall: (T) -> WrapperResult<N>,
+    ): WrapperResult<N> {
         return when (T::class) {
             Map::class -> {
                 try {
@@ -191,53 +225,40 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
         }
     }
 
-    private fun initListeners(sdk: HyperTrack) {
-        sdk.addTrackingListener(object : TrackingStateObserver.OnTrackingStateChangeListener {
-            override fun onTrackingStart() {
-                isTrackingEventStream?.let {
-                    sendEvent(it, serializeIsTracking(true))
-                }
+    private fun initListeners() {
+        HyperTrack.subscribeToErrors { errors ->
+            errorsEventStream?.let {
+                sendEvent(it, serializeErrors(errors))
             }
-
-            override fun onTrackingStop() {
-                isTrackingEventStream?.let {
-                    sendEvent(it, serializeIsTracking(false))
-                }
+        }
+        HyperTrack.subscribeToIsAvailable { isAvailable ->
+            isAvailableEventStream?.let {
+                sendEvent(it, serializeIsAvailable(isAvailable))
             }
-
-            override fun onError(error: TrackingError) {
-                errorsEventStream?.let {
-                    sendEvent(it, HyperTrackSdkWrapper.getErrors(error))
-                }
+        }
+        HyperTrack.subscribeToIsTracking { isTracking ->
+            isTrackingEventStream?.let {
+                sendEvent(it, serializeIsTracking(isTracking))
             }
-        })
-
-        sdk.addAvailabilityListener(object : AvailabilityStateObserver.OnAvailabilityStateChangeListener {
-            override fun onAvailable() {
-                isAvailableEventStream?.let {
-                    sendEvent(it, serializeIsAvailable(true))
-                }
+        }
+        HyperTrack.subscribeToLocation { location ->
+            locationEventStream?.let {
+                sendEvent(it, serializeLocationResult(location))
             }
-
-            override fun onUnavailable() {
-                isAvailableEventStream?.let {
-                    sendEvent(it, serializeIsAvailable(false))
-                }
-            }
-
-            override fun onError(error: AvailabilityError) {
-                // ignored, errors are handled by errorEventChannel
-            }
-        })
+        }
     }
 }
 
-private fun <S> Result<S>.sendAsCallbackResult(callbackContext: CallbackContext): Boolean {
+private fun <S> WrapperResult<S>.sendAsCallbackResult(callbackContext: CallbackContext): Boolean {
     return when (this) {
         is Success -> {
             when (val success = this.success) {
                 is Map<*, *> -> {
                     callbackContext.success(JSONObject(success))
+                    true
+                }
+                is List<*> -> {
+                    callbackContext.success(JSONArray(success))
                     true
                 }
                 is String -> {

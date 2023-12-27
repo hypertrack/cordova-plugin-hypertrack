@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2023-12-27
+
+### Fixed
+
+- Undefined latitude and longitude in `addGeotagWithExpectedLocation()` response
+
 ## [2.0.0] - 2023-11-29
 
 We are excited to announce the release of HyperTrack Cordova SDK 2.0.0, a major update to our location tracking SDK. This release ensures highest tracking performance, reduces deployed app sizes and comes with an improved API to simplify the integrations. We highly recommend upgrading, but please note that there are a few breaking changes. Check the [Migration Guide](https://hypertrack.com/docs/migration-guide).

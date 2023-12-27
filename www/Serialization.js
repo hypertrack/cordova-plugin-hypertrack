@@ -54,7 +54,10 @@ module.exports = {
     if (response.type == "success") {
       return {
         type: "success",
-        value: response.value.value,
+        value: {
+          latitude: response.value.value.latitude,
+          longitude: response.value.value.longitude,
+        },
       };
     } else {
       return {
@@ -69,7 +72,10 @@ module.exports = {
       return {
         type: "success",
         value: {
-          location: response.value.value.location,
+          location: {
+            latitude: response.value.value.location.value.latitude,
+            longitude: response.value.value.location.value.longitude,
+          },
           deviation: response.value.value.deviation,
         },
       };

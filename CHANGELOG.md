@@ -322,4 +322,5 @@ We are excited to announce the release of HyperTrack Cordova SDK 2.0.0, a major 
 [1.0.3]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/1.0.3
 [1.1.0]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/1.1.0
 [2.0.0]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/2.0.0
+[2.0.1]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/2.0.1
 [2.1.0]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/tag/2.1.0

@@ -1,5 +1,4 @@
 alias b := build
-alias c := clean
 alias d := docs
 alias gd := get-dependencies
 alias od := open-docs
@@ -16,6 +15,7 @@ alias usil := update-sdk-ios-latest
 alias usl := update-sdk-latest
 alias v := version
 
+PACKAGE_URL := "https://www.npmjs.com/package/cordova-plugin-hypertrack-v3/v/"
 REPOSITORY_NAME := "cordova-plugin-hypertrack"
 SDK_NAME := "HyperTrack SDK Cordova"
 
@@ -32,11 +32,7 @@ _ask-confirm:
 
 build: get-dependencies hooks docs
 
-clean:
-    rm package-lock.json
-    rm -rf node_modules
-
-docs: hooks
+docs: lint
     # no doc generation for cordova for now
 
 get-dependencies:
@@ -53,7 +49,7 @@ _latest-ios:
     @curl -s https://cocoapods.org/pods/HyperTrack | grep -m 1 -o -E "HyperTrack <span>{{SEMVER_REGEX}}" | grep -o -E '{{SEMVER_REGEX}}' | head -n 1
 
 open-docs: docs
-    open docs/index.html
+    code API-DOCUMENTATIOON.md
 
 lint:
     ktlint --format .
@@ -94,9 +90,10 @@ release type="dry-run": setup build
         echo "Are you sure you want to publish version $VERSION? (y/N)"
         just _ask-confirm
         npm publish
-        open "https://www.npmjs.com/package/cordova-plugin-hypertrack-v3/v/$VERSION"
-        open "https://github.com/hypertrack/cordova-plugin-hypertrack/releases/tag/$VERSION"
+        open "{{PACKAGE_URL}}$VERSION"
+        open "https://github.com/hypertrack/{{REPOSITORY_NAME}}/releases/tag/$VERSION"
     else
+        echo "Dry run for version $VERSION"
         npm publish --dry-run
     fi
 

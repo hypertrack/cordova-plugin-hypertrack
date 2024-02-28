@@ -1,4 +1,5 @@
 alias b := build
+alias c := clean
 alias d := docs
 alias gd := get-dependencies
 alias od := open-docs
@@ -32,6 +33,10 @@ _ask-confirm:
 
 build: get-dependencies hooks docs
 
+clean:
+    rm package-lock.json
+    rm -rf node_modules
+
 docs: lint
     # no doc generation for cordova for now
 
@@ -49,7 +54,7 @@ _latest-ios:
     @curl -s https://cocoapods.org/pods/HyperTrack | grep -m 1 -o -E "HyperTrack <span>{{SEMVER_REGEX}}" | grep -o -E '{{SEMVER_REGEX}}' | head -n 1
 
 open-docs: docs
-    code API-DOCUMENTATIOON.md
+    code API-DOCUMENTATION.md
 
 lint:
     ktlint --format .

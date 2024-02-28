@@ -17,7 +17,6 @@ import org.json.JSONObject
 import java.util.*
 
 class HyperTrackCordovaPlugin : CordovaPlugin() {
-
     private var errorsEventStream: CallbackContext? = null
     private var isAvailableEventStream: CallbackContext? = null
     private var isTrackingEventStream: CallbackContext? = null
@@ -74,9 +73,10 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
                 locateSubscription?.cancel()
                 locateEventStream?.let { disposeCallback(it) }
                 locateEventStream = callbackContext
-                locateSubscription = HyperTrack.locate {
-                    sendEvent(callbackContext, serializeLocateResult(it))
-                }
+                locateSubscription =
+                    HyperTrack.locate {
+                        sendEvent(callbackContext, serializeLocateResult(it))
+                    }
                 Success(NoCallback)
             }
             SdkMethod.setIsAvailable -> {
@@ -162,7 +162,10 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
         }
     }
 
-    private fun sendEvent(callbackContext: CallbackContext, data: Any) {
+    private fun sendEvent(
+        callbackContext: CallbackContext,
+        data: Any,
+    ) {
         try {
             when (data) {
                 is String -> {
@@ -190,9 +193,10 @@ class HyperTrackCordovaPlugin : CordovaPlugin() {
     }
 
     private fun disposeCallback(callbackContext: CallbackContext) {
-        val result = PluginResult(PluginResult.Status.NO_RESULT, "").also {
-            it.keepCallback = false
-        }
+        val result =
+            PluginResult(PluginResult.Status.NO_RESULT, "").also {
+                it.keepCallback = false
+            }
         callbackContext.sendPluginResult(result)
     }
 

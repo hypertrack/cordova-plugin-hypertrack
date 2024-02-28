@@ -5,11 +5,11 @@ import com.hypertrack.sdk.android.HyperTrack
 import com.hypertrack.sdk.android.HyperTrack.metadata
 import com.hypertrack.sdk.android.Json
 import com.hypertrack.sdk.android.Result
-import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeIsAvailable
-import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeName
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeGeotagData
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeIsAvailable
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeIsTracking
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeMetadata
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeName
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeDeviceId
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeErrors
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsAvailable
@@ -28,20 +28,20 @@ typealias Serialized = Map<String, Any?>
  * It receives serialized params.
  */
 internal object HyperTrackSdkWrapper {
-
     fun addGeotag(args: Serialized): WrapperResult<Serialized> {
         return deserializeGeotagData(args)
             .flatMapSuccess { geotag ->
                 // TODO: return proper error if JSON is wrong
                 val geotagMetadata = Json.fromMap(geotag.data)!!
-                val expectedLocation = geotag
-                    .expectedLocation
-                    ?.let {
-                        HyperTrack.Location(
-                            latitude = it.latitude,
-                            longitude = it.longitude
-                        )
-                    }
+                val expectedLocation =
+                    geotag
+                        .expectedLocation
+                        ?.let {
+                            HyperTrack.Location(
+                                latitude = it.latitude,
+                                longitude = it.longitude,
+                            )
+                        }
                 if (expectedLocation != null) {
                     HyperTrack
                         .addGeotag(geotagMetadata, expectedLocation)
@@ -76,13 +76,13 @@ internal object HyperTrackSdkWrapper {
 
     fun getIsAvailable(): WrapperResult<Serialized> {
         return Success(
-            serializeIsAvailable(HyperTrack.isAvailable)
+            serializeIsAvailable(HyperTrack.isAvailable),
         )
     }
 
     fun getIsTracking(): WrapperResult<Serialized> {
         return Success(
-            serializeIsTracking(HyperTrack.isTracking)
+            serializeIsTracking(HyperTrack.isTracking),
         )
     }
 
@@ -100,13 +100,13 @@ internal object HyperTrackSdkWrapper {
 
     fun getMetadata(): WrapperResult<Serialized> {
         return Success(
-            serializeMetadata(HyperTrack.metadata.toMap())
+            serializeMetadata(HyperTrack.metadata.toMap()),
         )
     }
 
     fun getName(): WrapperResult<Serialized> {
         return Success(
-            serializeName(HyperTrack.name)
+            serializeName(HyperTrack.name),
         )
     }
 
@@ -140,5 +140,4 @@ internal object HyperTrackSdkWrapper {
                 HyperTrack.name = name
             }
     }
-
 }

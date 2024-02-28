@@ -4,7 +4,10 @@ alias d := docs
 alias gd := get-dependencies
 alias od := open-docs
 alias pt := push-tag
+alias ogp := open-github-prs
+alias ogr := open-github-releases
 alias r := release
+alias s := setup
 alias us := update-sdk
 alias usa := update-sdk-android
 alias usal := update-sdk-android-latest
@@ -12,6 +15,10 @@ alias usi := update-sdk-ios
 alias usil := update-sdk-ios-latest
 alias usl := update-sdk-latest
 alias v := version
+
+PACKAGE_URL := "https://www.npmjs.com/package/cordova-plugin-hypertrack-v3/v/"
+REPOSITORY_NAME := "cordova-plugin-hypertrack"
+SDK_NAME := "HyperTrack SDK Cordova"
 
 # Source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 # \ are escaped
@@ -24,15 +31,13 @@ SEMVER_REGEX := "(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d
 _ask-confirm:
   @bash -c 'read confirmation; if [[ $confirmation != "y" && $confirmation != "Y" ]]; then echo "Okay 😮‍💨 😅"; exit 1; fi'
 
-build: get-dependencies hooks
+build: get-dependencies hooks docs
 
-clean: _clear-node-modules
+clean:
     rm package-lock.json
-
-_clear-node-modules:
     rm -rf node_modules
 
-docs: hooks
+docs: lint
     # no doc generation for cordova for now
 
 get-dependencies:
@@ -49,7 +54,20 @@ _latest-ios:
     @curl -s https://cocoapods.org/pods/HyperTrack | grep -m 1 -o -E "HyperTrack <span>{{SEMVER_REGEX}}" | grep -o -E '{{SEMVER_REGEX}}' | head -n 1
 
 open-docs: docs
-    open docs/index.html
+    code API-DOCUMENTATION.md
+
+lint:
+    ktlint --format .
+
+_open-github-release-data:
+    code CHANGELOG.md
+    just open-github-releases
+
+open-github-prs:
+    open "https://github.com/hypertrack/{{REPOSITORY_NAME}}/pulls"
+
+open-github-releases:
+    open "https://github.com/hypertrack/{{REPOSITORY_NAME}}/releases"
 
 push-tag:
     #!/usr/bin/env sh
@@ -62,23 +80,25 @@ push-tag:
         echo "You are not on main branch"
     fi
 
-release publish="dry-run": build
+release type="dry-run": setup build
     #!/usr/bin/env sh
     set -euo pipefail
     ./.githooks/pre-push
     VERSION=$(just version)
-    if [ {{publish}} = "publish" ]; then
+    if [ "{{type}}" = "publish" ] ; then
         BRANCH=$(git branch --show-current)
         if [ $BRANCH != "master" ]; then
             echo "You must be on main branch to publish a new version (current branch: $BRANCH))"
             exit 1
         fi
+
         echo "Are you sure you want to publish version $VERSION? (y/N)"
         just _ask-confirm
         npm publish
-        open "https://www.npmjs.com/package/cordova-plugin-hypertrack-v3/v/$VERSION"
-        open "https://github.com/hypertrack/cordova-plugin-hypertrack/releases/tag/$VERSION"
+        open "{{PACKAGE_URL}}$VERSION"
+        open "https://github.com/hypertrack/{{REPOSITORY_NAME}}/releases/tag/$VERSION"
     else
+        echo "Dry run for version $VERSION"
         npm publish --dry-run
     fi
 
@@ -130,6 +150,9 @@ update-sdk wrapper_version ios_version android_version commit="true" branch="tru
         git add .
         git commit -m "Update HyperTrack SDK iOS to {{ios_version}} and Android to {{android_version}}"
     fi
+    if [ "{{branch}}" = "true" ] && [ "{{commit}}" = "true" ] ; then
+        just open-github-prs
+    fi
 
 update-sdk-android wrapper_version android_version commit="true" branch="true": build
     #!/usr/bin/env sh
@@ -148,6 +171,9 @@ update-sdk-android wrapper_version android_version commit="true" branch="true": 
         git add .
         git commit -m "Update HyperTrack SDK Android to {{android_version}}"
     fi
+    if [ "{{branch}}" = "true" ] && [ "{{commit}}" = "true" ] ; then
+        just open-github-prs
+    fi
 
 update-sdk-ios wrapper_version ios_version commit="true" branch="true": build
     #!/usr/bin/env sh
@@ -165,6 +191,9 @@ update-sdk-ios wrapper_version ios_version commit="true" branch="true": build
     if [ "{{commit}}" = "true" ] ; then
         git add .
         git commit -m "Update HyperTrack SDK iOS to {{ios_version}}"
+    fi
+    if [ "{{branch}}" = "true" ] && [ "{{commit}}" = "true" ] ; then
+        just open-github-prs
     fi
 
 _update-sdk-android-version-file android_version:

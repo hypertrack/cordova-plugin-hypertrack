@@ -76,7 +76,7 @@
         <source url="https://cdn.cocoapods.org/" />
       </config>
       <pods use-frameworks="true">
-        <pod name="HyperTrack" spec="5.5.0"/>
+        <pod name="HyperTrack" spec="5.5.1"/>
       </pods>
     </podspec>
 

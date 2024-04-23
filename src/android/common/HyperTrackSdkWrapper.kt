@@ -3,12 +3,14 @@ package com.hypertrack.sdk.cordova.plugin.common
 import com.hypertrack.sdk.android.HyperTrack
 import com.hypertrack.sdk.android.Json
 import com.hypertrack.sdk.android.Result
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeDynamicPublishableKey
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeGeotagData
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeIsAvailable
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeIsTracking
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeMetadata
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.deserializeName
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeDeviceId
+import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeDynamicPublishableKey
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeErrors
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsAvailable
 import com.hypertrack.sdk.cordova.plugin.common.Serialization.serializeIsTracking

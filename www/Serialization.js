@@ -139,10 +139,17 @@ module.exports = {
     };
   },
 
-  serializeGeotag: function (data, expectedLocation) {
+  serializeGeotagData: function (
+    data,
+    expectedLocation,
+    orderHandle,
+    orderStatus
+  ) {
     return {
       data: data,
       expectedLocation: expectedLocation,
+      orderHandle: orderHandle,
+      orderStatus: orderStatus,
     };
   },
 };

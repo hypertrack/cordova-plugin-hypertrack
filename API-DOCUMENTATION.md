@@ -4,21 +4,30 @@
 
 ### addGeotag
 
-Adds a new geotag
+Adds a new geotag. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) and [Clock In/Out tagging](https://hypertrack.com/docs/clock-inout-tracking) docs to learn how to use Order handle and Order status params.
 
 ```javascript
-let result = await hyperTrack.addGeotag({
+const orderHanle = "test_order";
+const orderStatus = {
+  type: "orderStatusCustom",
+  value: "my_order_status",
+};
+const data = {
   test_object: {
     test_key1: "test_value1",
   },
-});
+};
+
+const result = await hyperTrack.addGeotag(orderHanle, orderStatus, data);
 ```
 
 #### Parameters
 
-| Name       | Type   | Description |
-| ---------- | ------ | ----------- |
-| geotagData | Object | Geotag data |
+| Name        | Type   | Description                 |
+| ----------- | ------ | --------------------------- |
+| orderHanle  | String | Order handle                |
+| orderStatus | Object | [OrderStatus](#orderstatus) |
+| geotagData  | Object | Geotag data                 |
 
 #### Returns
 
@@ -26,28 +35,40 @@ let result = await hyperTrack.addGeotag({
 
 ### addGeotagWithExpectedLocation
 
-Adds a new geotag with expected location
+Adds a new geotag with expected location. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) and [Clock In/Out tagging](https://hypertrack.com/docs/clock-inout-tracking) docs to learn how to use Order handle and Order status params.
 
 ```javascript
-let result = await hyperTrack.addGeotagWithExpectedLocation(
-  {
-    test_object: {
-      test_key1: "test_value1",
-    },
+const orderHandle = "test_order";
+const orderStatus = {
+  type: "orderStatusCustom",
+  value: "my_order_status",
+};
+const data = {
+  test_object: {
+    test_key1: "test_value1",
   },
-  {
-    latitude: 37.33182,
-    longitude: -122.03118,
-  }
+};
+const expectedLocation = {
+  latitude: 37.33182,
+  longitude: -122.03118,
+};
+
+let result = await hyperTrack.addGeotagWithExpectedLocation(
+  orderHandle,
+  orderStatus,
+  data,
+  expectedLocation
 );
 ```
 
 #### Parameters
 
-| Name             | Type                  | Description              |
-| ---------------- | --------------------- | ------------------------ |
-| geotagData       | Object                | Geotag data              |
-| expectedLocation | [Location](#location) | Expected location object |
+| Name             | Type                  | Description                 |
+| ---------------- | --------------------- | --------------------------- |
+| orderHanle       | String                | Order handle                |
+| orderStatus      | Object                | [OrderStatus](#orderstatus) |
+| geotagData       | Object                | Geotag data                 |
+| expectedLocation | [Location](#location) | Expected location object    |
 
 #### Returns
 
@@ -358,5 +379,22 @@ enum HyperTrackError {
 {
     "location": Location,
     "deviation": Double,
+}
+```
+
+### OrderStatus
+
+```javascript
+{
+    "type": "orderStatusClockIn"
+}
+
+{
+    "type": "orderStatusClockOut"
+}
+
+{
+    "type": "orderStatusCustom",
+    "value": String
 }
 ```

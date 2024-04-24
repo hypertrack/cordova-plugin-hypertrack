@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-hypertrack-v3"
-    version="2.1.2">
+    version="2.2.0">
   <name>HyperTrackPlugin</name>
   <description>Cordova HyperTrack Plugin is a wrapper around native iOS and Android SDKs that allows to integrate HyperTrack into Cordova apps.</description>
   <license>MIT</license>
@@ -76,7 +76,7 @@
         <source url="https://cdn.cocoapods.org/" />
       </config>
       <pods use-frameworks="true">
-        <pod name="HyperTrack" spec="5.4.1"/>
+        <pod name="HyperTrack" spec="5.5.2"/>
       </pods>
     </podspec>
 

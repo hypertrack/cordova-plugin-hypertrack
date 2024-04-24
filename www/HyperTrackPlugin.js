@@ -5,12 +5,23 @@ const pluginName = "HyperTrackCordovaPlugin";
 const HyperTrack = (function () {
   const staticMethods = {
     /**
-     * Adds a new geotag
+     * Adds a new geotag. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) and [Clock In/Out tagging](https://hypertrack.com/docs/clock-inout-tracking) docs to learn how to use Order handle and Order status params.
      *
+     * @param {string} orderHandle - Order handle
+     * @param {string} orderStatus - Order status
      * @param {Object} data - Geotad data JSON
      * @returns current location if success or LocationError if failure
      */
-    addGeotag: async function (geotagData) {
+    addGeotag: async function (orderHandle, orderStatus, geotagMetadata) {
+      if (
+        typeof orderHandle !== "string" ||
+        typeof orderStatus !== "object" ||
+        typeof geotagMetadata !== "object"
+      ) {
+        throw new Error(
+          "Invalid arguments, expected: (orderHandle: string, orderStatus: object, geotagMetadata: object)"
+        );
+      }
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
           resolve(Serialization.deserializeLocationResult(success));
@@ -19,19 +30,98 @@ const HyperTrack = (function () {
           throw Error(error);
         };
         exec(onSuccess, onError, pluginName, "addGeotag", [
-          Serialization.serializeGeotag(geotagData),
+          Serialization.serializeGeotagData(
+            geotagMetadata,
+            undefined,
+            orderHandle,
+            orderStatus
+          ),
         ]);
       });
     },
 
     /**
-     * Adds a new geotag with expected location
+     * Adds a new geotag with expected location. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) and [Clock In/Out tagging](https://hypertrack.com/docs/clock-inout-tracking) docs to learn how to use Order handle and Order status params.
      *
+     * @param {string} orderHandle - Order handle
+     * @param {string} orderStatus - Order status
      * @param {Object} data - Geotad data JSON
      * @param {Location} expectedLocation - Expected location
      * @returns location with deviation if success or LocationError if failure
      */
     addGeotagWithExpectedLocation: async function (
+      orderHandle,
+      orderStatus,
+      geotagData,
+      expectedLocation
+    ) {
+      if (
+        typeof orderHandle !== "string" ||
+        typeof orderStatus !== "object" ||
+        typeof geotagData !== "object" ||
+        typeof expectedLocation !== "object"
+      ) {
+        throw new Error(
+          "Invalid arguments, expected: (orderHandle: string, orderStatus: object, geotagData: object, expectedLocation: object)"
+        );
+      }
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
+          resolve(
+            Serialization.deserializeLocationWithDeviationResult(success)
+          );
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "addGeotag", [
+          Serialization.serializeGeotagData(
+            geotagData,
+            Serialization.serializeLocation(expectedLocation),
+            orderHandle,
+            orderStatus
+          ),
+        ]);
+      });
+    },
+
+    /**
+     * @deprecated
+     * Adds a new geotag.
+     * This method is deprecated. Use addGeotag with orderHandle and orderStatus instead.
+     *
+     * @param {Object} data - Geotad data JSON
+     * @returns current location if success or LocationError if failure
+     */
+    addGeotagDeprecated: async function (geotagData) {
+      return new Promise(function (resolve, _reject) {
+        const onSuccess = function (success) {
+          resolve(Serialization.deserializeLocationResult(success));
+        };
+        const onError = function (error) {
+          throw Error(error);
+        };
+        exec(onSuccess, onError, pluginName, "addGeotag", [
+          Serialization.serializeGeotagData(
+            geotagData,
+            undefined,
+            undefined,
+            undefined
+          ),
+        ]);
+      });
+    },
+
+    /**
+     * @deprecated
+     * Adds a new geotag with expected location.
+     * This method is deprecated. Use addGeotag with orderHandle and orderStatus instead.
+     *
+     * @param {Object} data - Geotad data JSON
+     * @param {Location} expectedLocation - Expected location
+     * @returns location with deviation if success or LocationError if failure
+     */
+    addGeotagWithExpectedLocationDeprecated: async function (
       geotagData,
       expectedLocation
     ) {
@@ -45,9 +135,11 @@ const HyperTrack = (function () {
           throw Error(error);
         };
         exec(onSuccess, onError, pluginName, "addGeotag", [
-          Serialization.serializeGeotag(
+          Serialization.serializeGeotagData(
             geotagData,
-            Serialization.serializeLocation(expectedLocation)
+            Serialization.serializeLocation(expectedLocation),
+            undefined,
+            undefined
           ),
         ]);
       });

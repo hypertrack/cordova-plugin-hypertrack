@@ -76,8 +76,9 @@ push-tag:
         VERSION=$(just version)
         git tag $VERSION
         git push origin $VERSION
+        just _open-github-release-data
     else
-        echo "You are not on main branch"
+        echo "You are not on master branch"
     fi
 
 release type="dry-run": setup build

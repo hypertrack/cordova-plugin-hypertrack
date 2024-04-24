@@ -4,7 +4,7 @@
 
 ### addGeotag
 
-Adds a new geotag. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) doc to learn how to use Order handle and Order status params.
+Adds a new geotag. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) and [Clock In/Out tagging](https://hypertrack.com/docs/clock-inout-tracking) docs to learn how to use Order handle and Order status params.
 
 ```javascript
 const orderHanle = "test_order";
@@ -35,7 +35,7 @@ const result = await hyperTrack.addGeotag(orderHanle, orderStatus, data);
 
 ### addGeotagWithExpectedLocation
 
-Adds a new geotag with expected location. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) doc to learn how to use Order handle and Order status params.
+Adds a new geotag with expected location. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) and [Clock In/Out tagging](https://hypertrack.com/docs/clock-inout-tracking) docs to learn how to use Order handle and Order status params.
 
 ```javascript
 const orderHandle = "test_order";

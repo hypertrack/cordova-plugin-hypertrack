@@ -148,7 +148,10 @@ module.exports = {
     return {
       data: data,
       expectedLocation: expectedLocation,
-      orderHandle: orderHandle,
+      orderHandle: {
+        type: "orderHandle",
+        value: orderHandle,
+      },
       orderStatus: orderStatus,
     };
   },

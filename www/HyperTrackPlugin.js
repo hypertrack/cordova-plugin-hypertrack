@@ -13,6 +13,15 @@ const HyperTrack = (function () {
      * @returns current location if success or LocationError if failure
      */
     addGeotag: async function (orderHandle, orderStatus, geotagMetadata) {
+      if (
+        typeof orderHandle !== "string" ||
+        typeof orderStatus !== "object" ||
+        typeof geotagMetadata !== "object"
+      ) {
+        throw new Error(
+          "Invalid arguments, expected: (orderHandle: string, orderStatus: object, geotagMetadata: object)"
+        );
+      }
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
           resolve(Serialization.deserializeLocationResult(success));
@@ -46,6 +55,16 @@ const HyperTrack = (function () {
       geotagData,
       expectedLocation
     ) {
+      if (
+        typeof orderHandle !== "string" ||
+        typeof orderStatus !== "object" ||
+        typeof geotagData !== "object" ||
+        typeof expectedLocation !== "object"
+      ) {
+        throw new Error(
+          "Invalid arguments, expected: (orderHandle: string, orderStatus: object, geotagData: object, expectedLocation: object)"
+        );
+      }
       return new Promise(function (resolve, _reject) {
         const onSuccess = function (success) {
           resolve(

@@ -5,7 +5,7 @@ const pluginName = "HyperTrackCordovaPlugin";
 const HyperTrack = (function () {
   const staticMethods = {
     /**
-     * Adds a new geotag
+     * Adds a new geotag. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) and [Clock In/Out tagging](https://hypertrack.com/docs/clock-inout-tracking) docs to learn how to use Order handle and Order status params.
      *
      * @param {string} orderHandle - Order handle
      * @param {string} orderStatus - Order status
@@ -41,7 +41,7 @@ const HyperTrack = (function () {
     },
 
     /**
-     * Adds a new geotag with expected location
+     * Adds a new geotag with expected location. Check [Shift tracking](https://hypertrack.com/docs/shift-tracking) and [Clock In/Out tagging](https://hypertrack.com/docs/clock-inout-tracking) docs to learn how to use Order handle and Order status params.
      *
      * @param {string} orderHandle - Order handle
      * @param {string} orderStatus - Order status

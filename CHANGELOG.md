@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.2] - 2024-05-14
+
+### Changed
+
+- Updated HyperTrack SDK iOS to [5.5.4](https://github.com/hypertrack/sdk-ios/releases/tag/5.5.4)
+- Updated HyperTrack SDK Android to [7.5.4](https://github.com/hypertrack/sdk-android/releases/tag/7.5.4)
+
 ## [2.2.1] - 2024-05-03
 
 ### Changed
@@ -355,3 +362,4 @@ We are excited to announce the release of HyperTrack Cordova SDK 2.0.0, a major 
 [2.1.2]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/tag/2.1.2
 [2.2.0]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/tag/2.2.0
 [2.2.1]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/tag/2.2.1
+[2.2.2]: https://github.com/hypertrack/cordova-plugin-hypertrack/releases/tag/2.2.2
